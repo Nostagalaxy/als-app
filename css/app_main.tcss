@@ -1,0 +1,22 @@
+
+
+#diagram {
+    margin: 5;
+}
+
+
+.station {
+    align: center middle;
+    layout: horizontal;
+    height: auto;
+
+}
+
+.light {
+    width: 2;
+    height: 2; 
+}
+
+.blink {
+    visibility: hidden;
+}

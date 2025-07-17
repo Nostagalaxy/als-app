@@ -1,0 +1,65 @@
+#status {
+    align: center middle;
+    background: green;
+    border: outer lightgreen;
+}
+
+#status_line {
+    height: 5;
+}
+
+#label {
+    text-style: bold italic;
+    color: yellowgreen; 
+}  
+
+#light_input {
+    width: 1fr;
+    border: none;
+    color: yellowgreen;
+    align: center middle;
+}
+
+#in_light_label {
+
+    color: yellowgreen;
+    width: 1fr;
+    height: 1;
+    content-align: right middle;
+}
+
+#station_input {
+    width: 1fr;
+    height: 1;
+    border: none;
+    content-align: center middle;
+    color: yellowgreen;
+}
+
+#in_station_label {
+    width: 1fr;
+    content-align: right middle;
+
+    color: yellowgreen;
+}
+
+#sidebar {
+    dock: left;
+    width: 25%;
+    border: double gray;
+    margin: 3;
+}
+
+.line {
+    align: center middle;
+    height: 1   ;
+}
+
+.in_spacer{
+    width: 1fr;
+}
+
+#button_line {
+    align: center middle;
+    height: 5;
+}
