@@ -20,7 +20,8 @@ class ALSFDiagram(Widget):
     ASCII_RED : str = "[bold red]O[/]"
     ASCII_WHITE : str = "[bold white]O[/]"
 
-    current_station = None
+    previous_station : Horizontal = None
+    current_station : Horizontal = None
 
     class LightTile(Static):
         """ 
@@ -37,15 +38,18 @@ class ALSFDiagram(Widget):
                 self.light_id : int = light_id
                 super().__init__()
 
-        def on_click(self, event: Click) -> None:
-
-            self.log('Station: ' + str(self.query_ancestor(Horizontal)) + 'selected.')
-            station = self.query_ancestor(Horizontal)
-            if station:
-                station.styles.background = Color.parse('yellow')
-                self.log('yellow backgr')
-            else:
-                self.log("No Horizontal ancestor found.")
+        # def on_click(self, event: Click) -> None:
+        #     # # DEBUG
+        #     # self.log('Station: ' + str(self.query_ancestor(Horizontal)) + 'selected.')
+            
+        #     # # Check if click event is a Horizontal widget
+        #     # station = self.query_ancestor(Horizontal)
+        #     # if station:
+        #     #     # Change background to yellow
+        #     #     station.styles.background = Color.parse('yellow')
+        #     # else:
+        #     #     # DEBUG - Event is not a horizontal
+        #     #     self.log("No Horizontal ancestor found.")
         
         # Blink when blink state is set to true
         async def blink(self) -> None:
@@ -55,22 +59,37 @@ class ALSFDiagram(Widget):
                 self.remove_class("blink")
                 await asyncio.sleep(1.0)
 
-    # DEBUG FUNCTION TO TRACK LIGHT ID MESSAGE ***
-    def on_light_tile_selected(self, message : LightTile.Selected) -> None:
-        self.app.log(f'Diagram got message : {message} from : {message.light_id}.')
-
     def on_click(self, event : Click):
+        """ Highlights station when diagram is clicked """
+        
         self.log(str(event.widget))         # DEBUG
-        station_num : int = -1
-        if(isinstance(event.widget, Horizontal) and (self.current_station is None)):
-            station_num = event.widget.id
-            self.current_station = station_num[1:]
-            self.log('No current station')  # DEBUG
-            self.log(station_num)           # DEBUG
-        elif(event.widget, Horizontal):
-            station_num = event.widget.id
-            current_station = station_num[1:]
-            self.log(station_num)           # DEBUG
+
+        # If event is a Horizontal 
+        if(isinstance(event.widget, Horizontal)):
+            
+            self.current_station = event.widget 
+
+            # DEBUG
+            self.log(str(self.current_station))
+
+            # Check if a previous station is highlighted
+            if(self.previous_station is not None):
+                # Un-highlight that station
+                self.previous_station.styles.background = 'yellow 0%'
+            
+            # Highlight selected station
+            self.current_station.styles.background = 'yellow 20%'
+
+            # Set previous station to current station
+            self.previous_station = self.current_station
+
+        # If event is a LightTile
+        elif(isinstance(event.widget, self.LightTile)):
+            # DEBUG
+            self.log("Light tile selected : " + str(event.widget))
+
+
+        self.log(str(self.current_station))
 
     def compose(self):
         """ Composes all widgets of the Diagram"""
@@ -120,32 +139,32 @@ class ALSFDiagram(Widget):
 
     def generate_1000_foot(self, station_id : int) -> ComposeResult:
         light_pos = 1
-        for light_pos in range(1, 24):
+        for l in range(1, 24):
     
             # Spacer
-            if(light_pos == 9 or light_pos == 15):
+            if(l == 9 or l == 15):
                 yield Static(' ', classes='light')
     
             # White light
             else:
-                yield self.LightTile(self.ASCII_WHITE, classes='light', id='-' + 's' + str(station_id) + '-light_pos' + str(light_pos))
+                yield self.LightTile(self.ASCII_WHITE, classes='light', id='_' + str(station_id) + '-' +  str(light_pos))
                 light_pos += 1
     
     def generate_inner_bars(self, station_id : int) -> ComposeResult:
         light_pos = 1
-        for light_pos in range(1, 21):
+        for l in range(1, 21):
     
             # Red wing bar light                
-            if((light_pos >=1 and light_pos <= 3) or (light_pos >= 17 and light_pos <= 19)):
-                yield self.LightTile(self.ASCII_RED, classes="light", id='-' + 's' + str(station_id) + '-light_pos' + str(light_pos))
+            if((l >=1 and l <= 3) or (l >= 17 and l <= 19)):
+                yield self.LightTile(self.ASCII_RED, classes="light", id='_' + str(station_id) + '-' + str(light_pos))
                 light_pos += 1        
     
             # Spacer
-            elif((light_pos >= 4 and light_pos <= 7) or (light_pos >= 13 and light_pos <= 16)):
+            elif((l >= 4 and l <= 7) or (l >= 13 and l <= 16)):
                 yield Static(" ", classes='light')
     
             # White center light
-            elif(light_pos >= 8 and light_pos <= 12):
+            elif(l >= 8 and l <= 12):
                 yield self.LightTile(self.ASCII_WHITE, classes="light", id='_' + str(station_id) + '-' + str(light_pos))  
                 light_pos += 1
 
