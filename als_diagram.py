@@ -4,6 +4,7 @@ from textual.events import Click
 from textual.widgets import Static
 from textual.app import ComposeResult
 from textual.message import Message
+from textual.color import Color
 from rich import print
 
 from side_menu import SideMenu
@@ -18,6 +19,8 @@ class ALSFDiagram(Widget):
     ASCII_GREEN : str = "[bold green]O[/]"
     ASCII_RED : str = "[bold red]O[/]"
     ASCII_WHITE : str = "[bold white]O[/]"
+
+    current_station = None
 
     class LightTile(Static):
         """ 
@@ -35,15 +38,14 @@ class ALSFDiagram(Widget):
                 super().__init__()
 
         def on_click(self, event: Click) -> None:
-            
-            self.app.log(f'{self.id} selected.')                                           #  DEBUG
-            
-            # Send event of light id when clicked
-            self.post_message(self.Selected(self.id))
 
-            # Set blink state when clicked on
-            self.is_blinking = not self.is_blinking
-            self.run_worker(self.blink())
+            self.log('Station: ' + str(self.query_ancestor(Horizontal)) + 'selected.')
+            station = self.query_ancestor(Horizontal)
+            if station:
+                station.styles.background = Color.parse('yellow')
+                self.log('yellow backgr')
+            else:
+                self.log("No Horizontal ancestor found.")
         
         # Blink when blink state is set to true
         async def blink(self) -> None:
@@ -56,6 +58,19 @@ class ALSFDiagram(Widget):
     # DEBUG FUNCTION TO TRACK LIGHT ID MESSAGE ***
     def on_light_tile_selected(self, message : LightTile.Selected) -> None:
         self.app.log(f'Diagram got message : {message} from : {message.light_id}.')
+
+    def on_click(self, event : Click):
+        self.log(str(event.widget))         # DEBUG
+        station_num : int = -1
+        if(isinstance(event.widget, Horizontal) and (self.current_station is None)):
+            station_num = event.widget.id
+            self.current_station = station_num[1:]
+            self.log('No current station')  # DEBUG
+            self.log(station_num)           # DEBUG
+        elif(event.widget, Horizontal):
+            station_num = event.widget.id
+            current_station = station_num[1:]
+            self.log(station_num)           # DEBUG
 
     def compose(self):
         """ Composes all widgets of the Diagram"""
@@ -87,53 +102,53 @@ class ALSFDiagram(Widget):
                         yield from self.generate_outer_bars(s)
     
     def generate_threshold(self, station_id: int) -> ComposeResult:
-        for l in range(1, 50):
+        for light_pos in range(1, 50):
     
             # Green threshold
-            yield self.LightTile(self.ASCII_GREEN, classes="light", id='s' + str(station_id) + '-l' + str(l))
+            yield self.LightTile(self.ASCII_GREEN, classes="light", id='_' + str(station_id) + '-' + str(light_pos))
 
     def generate_500_foot(self, station_id: int) -> ComposeResult:
-        for l in range(1, 20):
+        for light_pos in range(1, 20):
     
             # Red wing bar light  
-            if((l > 0 and l < 4) or (l > 16 and l < 20)):
-                yield self.LightTile(self.ASCII_RED, classes="light", id='s' + str(station_id) + '-l' + str(l))
+            if((light_pos > 0 and light_pos < 4) or (light_pos > 16 and light_pos < 20)):
+                yield self.LightTile(self.ASCII_RED, classes="light", id='_' + str(station_id) + '-' + str(light_pos))
     
             # White center light
             else:
-                yield self.LightTile(self.ASCII_WHITE, classes="light", id='s' + str(station_id) + '-l' + str(l))
+                yield self.LightTile(self.ASCII_WHITE, classes="light", id='_' + str(station_id) + '-' + str(light_pos))
 
     def generate_1000_foot(self, station_id : int) -> ComposeResult:
         light_pos = 1
-        for l in range(1, 24):
+        for light_pos in range(1, 24):
     
             # Spacer
-            if(l == 9 or l == 15):
+            if(light_pos == 9 or light_pos == 15):
                 yield Static(' ', classes='light')
     
             # White light
             else:
-                yield self.LightTile(self.ASCII_WHITE, classes='light', id='s' + str(station_id) + '-l' + str(light_pos))
+                yield self.LightTile(self.ASCII_WHITE, classes='light', id='-' + 's' + str(station_id) + '-light_pos' + str(light_pos))
                 light_pos += 1
     
     def generate_inner_bars(self, station_id : int) -> ComposeResult:
         light_pos = 1
-        for l in range(1, 21):
+        for light_pos in range(1, 21):
     
             # Red wing bar light                
-            if((l >=1 and l <= 3) or (l >= 17 and l <= 19)):
-                yield self.LightTile(self.ASCII_RED, classes="light", id='s' + str(station_id) + '-l' + str(light_pos))
+            if((light_pos >=1 and light_pos <= 3) or (light_pos >= 17 and light_pos <= 19)):
+                yield self.LightTile(self.ASCII_RED, classes="light", id='-' + 's' + str(station_id) + '-light_pos' + str(light_pos))
                 light_pos += 1        
     
             # Spacer
-            elif((l >= 4 and l <= 7) or (l >= 13 and l <= 16)):
+            elif((light_pos >= 4 and light_pos <= 7) or (light_pos >= 13 and light_pos <= 16)):
                 yield Static(" ", classes='light')
     
             # White center light
-            elif(l >= 8 and l <= 12):
-                yield self.LightTile(self.ASCII_WHITE, classes="light", id='s' + str(station_id) + '-l' + str(light_pos))  
+            elif(light_pos >= 8 and light_pos <= 12):
+                yield self.LightTile(self.ASCII_WHITE, classes="light", id='_' + str(station_id) + '-' + str(light_pos))  
                 light_pos += 1
 
     def generate_outer_bars(self, station_id : int) -> ComposeResult:
-        for l in range(1, 6):
-            yield self.LightTile(self.ASCII_WHITE, classes="light", id='s' + str(station_id) + '-l' + str(l))
+        for light_pos in range(1, 6):
+            yield self.LightTile(self.ASCII_WHITE, classes="light", id='_' + str(station_id) + '-' + str(light_pos))

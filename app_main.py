@@ -18,19 +18,6 @@ class MyApp(App):
         yield SideMenu(id='sidebar')
 
         print('App widgets composed!') # DEBUG
-    
-    def on_light_tile_selected(self, message : ALSFDiagram.LightTile.Selected) -> None:
-        self.log(f'App received {message} from {message.light_id}') #DEBUG
-        #TODO fix the decode algorithm - maybe dicts are not a good data type *******************************************************8
-        id : str = message.light_id
-
-        station_light = self.decode_id(id)
-        l = int(station_light.keys())
-        print(l)
-        print(station_light.values())
-
-        status : Label = self.query_one("#selected_light")
-        status.update(message.light_id)
 
     def decode_id(self, in_id : str) -> dict:
         id_list : list[str] = in_id.split('-')
