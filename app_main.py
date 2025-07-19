@@ -19,21 +19,6 @@ class MyApp(App):
 
         print('App widgets composed!') # DEBUG
 
-    def decode_id(self, in_id : str) -> dict:
-        id_list : list[str] = in_id.split('-')
-        
-        light_str : str = id_list.pop()
-        light_str = light_str[1]
-        station_str : str = id_list.pop()
-        station_str = station_str[1]
-
-        light : int = int(light_str)
-        station : int = int(station_str)
-
-        decoded_id : dict = {station: light}
-
-        return decoded_id
-
 
 if __name__ == "__main__":
     app = MyApp()
