@@ -38,18 +38,8 @@ class ALSFDiagram(Widget):
                 self.light_id : int = light_id
                 super().__init__()
 
-        # def on_click(self, event: Click) -> None:
-        #     # # DEBUG
-        #     # self.log('Station: ' + str(self.query_ancestor(Horizontal)) + 'selected.')
-            
-        #     # # Check if click event is a Horizontal widget
-        #     # station = self.query_ancestor(Horizontal)
-        #     # if station:
-        #     #     # Change background to yellow
-        #     #     station.styles.background = Color.parse('yellow')
-        #     # else:
-        #     #     # DEBUG - Event is not a horizontal
-        #     #     self.log("No Horizontal ancestor found.")
+        def on_click(self, event: Click) -> None:
+            self.log(str(event.widget.id))
         
         # Blink when blink state is set to true
         async def blink(self) -> None:
@@ -61,34 +51,28 @@ class ALSFDiagram(Widget):
 
     def on_click(self, event : Click):
         """ Highlights station when diagram is clicked """
-        
-        self.log(str(event.widget))         # DEBUG
 
         # If event is a Horizontal 
         if(isinstance(event.widget, Horizontal)):
             
-            self.current_station = event.widget 
-
-            # DEBUG
-            self.log(str(self.current_station))
-
-            # Check if a previous station is highlighted
-            if(self.previous_station is not None):
-                # Un-highlight that station
-                self.previous_station.styles.background = 'yellow 0%'
-            
-            # Highlight selected station
-            self.current_station.styles.background = 'yellow 20%'
-
-            # Set previous station to current station
-            self.previous_station = self.current_station
-
+            self.current_station = event.widget
         # If event is a LightTile
-        elif(isinstance(event.widget, self.LightTile)):
-            # DEBUG
-            self.log("Light tile selected : " + str(event.widget))
+        else:
+            # Get the Horizontal parent of LightTile
+            self.current_station = event.widget.query_ancestor(Horizontal)
 
+        # Check if a previous station is highlighted
+        if(self.previous_station is not None):
+            # Un-highlight that station
+            self.previous_station.styles.background = 'yellow 0%'
+        
+        # Highlight selected station
+        self.current_station.styles.background = 'yellow 20%'
 
+        # Set previous station to current station
+        self.previous_station = self.current_station
+
+        # DEBUG
         self.log(str(self.current_station))
 
     def compose(self):
