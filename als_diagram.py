@@ -10,7 +10,10 @@ from rich import print
 from side_menu import SideMenu
 
 class ALSFDiagram(Widget):
-    #TODO create info on diagram once parent class is developed.
+    
+    #                       TODO 
+    # create info on diagram once parent class is developed.
+    # Fix LightTile on_click() where click event is a Static or LightTile
 
     # Different style lights
     UNICODE_GREEN : str = "\U0001F7E2"
@@ -84,6 +87,7 @@ class ALSFDiagram(Widget):
             # Set previous station to current station
             self.previous_station = self.current_station
 
+        # TODO - Fix this section of code
         # If event is a LightTile
         elif(isinstance(event.widget, self.LightTile)):
             # DEBUG

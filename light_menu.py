@@ -6,11 +6,12 @@ from textual.widgets import Label, Button
 class LightMenu(Screen):
     """Screen for data and settings for Light"""
     
-    def on_compose(self) -> ComposeResult:
-        yield Grid(
-            Label("Hello"),
-            Button("Quit", classes="light_menu", id="quit")
-        )
+    CSS_PATH = "css/light_menu.tcss"
+
+    def compose(self) -> ComposeResult:
+        yield Button("Quit", id="quit")
+
+        self.log("Light menu composed")
 
     def on_button_pressed(self, event : Button.Pressed) -> None:
         if event.button.id == "quit":
