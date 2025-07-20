@@ -39,6 +39,9 @@ class Als:
         def get_light(self, pos : int):
             """Get light from indicated position"""
             return self.lights[pos - 1]
+        
+        def get_size(self) -> int:
+            return self.size
 
         def __str__(self):
             """Return string representation of object"""
@@ -48,7 +51,7 @@ class Als:
         self.stations = []
         self.__load_stations_from_file(self.CONFIG_FILE)
 
-    def __load_stations_from_file(self, file_name : str) -> list:
+    def __load_stations_from_file(self, file_name : str) -> None:
         """Load station settings from a config file"""
         
         # Counter for station init

@@ -1,6 +1,17 @@
-LightMenu {
-    align: center middle;
+Grid {
+    grid-size: 2 1;
 }
+
+#left_panel {
+    align: right middle;
+    width: 1fr;
+}
+
+#right_panel {
+    width: 1fr;
+    border: thick yellow;
+}
+
 
 #dialog {
     grid-size: 2;
@@ -14,6 +25,5 @@ LightMenu {
 }
 
 #quit {
-    background: yellow;
-    width: 100%;
+    background: orange;
 }

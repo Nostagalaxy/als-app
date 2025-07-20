@@ -1,7 +1,8 @@
 from textual.app import App, ComposeResult
-from textual.widgets import Header, Footer, Button
+from textual.widgets import Header, Footer, Button, Input
 
 from als_diagram import ALSFDiagram
+from als import Als
 from side_menu import SideMenu
 from light_menu import LightMenu
 
@@ -11,6 +12,10 @@ class MyApp(App):
         "css/side_menu.tcss"
     ]
 
+    def __init__(self):
+        super().__init__()
+        self.als = Als()
+
     def compose(self) -> ComposeResult:
         yield Header(True, name="A.D.A.M")
         yield ALSFDiagram(id='diagram')
@@ -18,9 +23,40 @@ class MyApp(App):
         yield Footer()
 
     def on_button_pressed(self, event : Button.Pressed):
-        if event.button.id == "light_select":
-            self.push_screen(LightMenu())
 
+        if event.button.id == "light_select":
+            # Check inputs have data and data is correct
+            if self.__is_valid_input():
+                self.push_screen(LightMenu())
+            else:
+                self.log("Invalid selection")
+
+    def __is_valid_input(self) -> bool:
+        # Get data from inputs
+        station_input = self.query_one("#station_input", Input).value
+        light_input = self.query_one("#light_input", Input).value
+       
+        # Check if input is a number
+        try:
+            station_int = int(station_input)
+            light_int = int(light_input)
+        except ValueError:
+            print("Not an integer")
+            return False
+        
+        # Check if number is within range
+        if station_int < 0 or station_int > 24:
+            return False
+        
+        # Get station to determine number of lights
+        station : Als._Station = self.als.stations[station_int]
+
+        # Check if input number is within range
+        if light_int < 0 or light_int > station.size:
+            return False
+        
+        # Returns True if all other statements are passed
+        return True
 
 if __name__ == "__main__":
     app = MyApp()
