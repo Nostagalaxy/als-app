@@ -17,13 +17,9 @@ class MyApp(App):
         yield SideMenu(id='sidebar')
         yield Footer()
 
-        print('App widgets composed!') # DEBUG
-
     def on_button_pressed(self, event : Button.Pressed):
-        self.log(event)
         if event.button.id == "light_select":
             self.push_screen(LightMenu())
-            self.log("Light menu pushed")
 
 
 if __name__ == "__main__":

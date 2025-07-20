@@ -11,8 +11,6 @@ class LightMenu(Screen):
     def compose(self) -> ComposeResult:
         yield Button("Quit", id="quit")
 
-        self.log("Light menu composed")
-
     def on_button_pressed(self, event : Button.Pressed) -> None:
         if event.button.id == "quit":
             self.app.pop_screen()   
