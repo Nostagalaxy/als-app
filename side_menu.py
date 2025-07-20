@@ -5,6 +5,8 @@ from textual.app import ComposeResult
 
 class SideMenu(Widget):
 
+    # TODO fix the nightmare that is on_compose() 
+
     def compose(self) -> ComposeResult:
         with Vertical():
             # Status Button
@@ -24,6 +26,6 @@ class SideMenu(Widget):
                 yield Input(classes="sideb_wid", id="light_input", type="integer", max_length=2)
                 yield Label(classes="in_spacer")
             with Horizontal(id="button_line"):
-                yield Button("Select Light", id="button_select")
+                yield Button("Select Light", id="light_select")
             with Horizontal(id="line"):
                 yield Label(id="selected_light")

@@ -20,6 +20,7 @@ class Als:
             self.station_id = station_id
 
         def __str__(self):
+            """Return string representation of object"""
             return f"[*Light* Station : {self.station_id}, Pos : {self.pos}, Color : {self.color}]"
 
     class _Station:
@@ -40,7 +41,7 @@ class Als:
             return self.lights[pos - 1]
 
         def __str__(self):
-            """Return s tring representation of object"""
+            """Return string representation of object"""
             return f"[*Station* ID : {self.id}, Flasher : {self.has_flasher}]"
 
     def __init__(self) -> None:
@@ -96,6 +97,7 @@ class Als:
         return station.get_light(light_pos)
 
     def __str__(self):
+        """Return string representation of object"""
         print("+++++++++ Stations ++++++++\n")
         for station in self.stations:
             print(station)

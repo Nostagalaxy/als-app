@@ -1,11 +1,9 @@
 from textual.app import App, ComposeResult
-from textual.containers import Vertical, Horizontal, Container, VerticalScroll
-from textual.widgets import RadioButton, Static, Header, Label
-from textual.message import Message
-from textual.events import Click
+from textual.widgets import Header, Footer, Button
 
 from als_diagram import ALSFDiagram
 from side_menu import SideMenu
+from light_menu import LightMenu
 
 class MyApp(App):
     CSS_PATH = [
@@ -14,10 +12,16 @@ class MyApp(App):
     ]
 
     def compose(self) -> ComposeResult:
+        yield Header(True, name="A.D.A.M")
         yield ALSFDiagram(id='diagram')
         yield SideMenu(id='sidebar')
+        yield Footer()
 
         print('App widgets composed!') # DEBUG
+
+    def on_button_pressed(self, event : Button.Pressed):
+        if event.button.id == "light_select":
+            self.push_screen(LightMenu())
 
 
 if __name__ == "__main__":

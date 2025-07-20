@@ -29,8 +29,9 @@ class ALSFDiagram(Widget):
             a light in the light field diagram usng Unicode icons.
         """
 
-        # Member Variables
-        is_blinking : bool = False
+        def __init__(self, content = "", *, expand = False, shrink = False, markup = True, name = None, id = None, classes = None, disabled = False):
+            super().__init__(content, expand=expand, shrink=shrink, markup=markup, name=name, id=id, classes=classes, disabled=disabled)
+            self.is_blinking : bool = False
 
         class Selected(Message):
             """ Message that has ID of light selected """
@@ -87,7 +88,6 @@ class ALSFDiagram(Widget):
         elif(isinstance(event.widget, self.LightTile)):
             # DEBUG
             self.log("Light tile selected : " + str(event.widget))
-
 
         self.log(str(self.current_station))
 
