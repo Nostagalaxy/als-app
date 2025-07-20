@@ -33,26 +33,18 @@ class MyApp(App):
 
     def __is_valid_input(self) -> bool:
         # Get data from inputs
-        station_input = self.query_one("#station_input", Input).value
-        light_input = self.query_one("#light_input", Input).value
-       
-        # Check if input is a number
-        try:
-            station_int = int(station_input)
-            light_int = int(light_input)
-        except ValueError:
-            print("Not an integer")
-            return False
+        station_input = int(self.query_one("#station_input", Input).value)
+        light_input = int(self.query_one("#light_input", Input).value)
         
         # Check if number is within range
-        if station_int < 0 or station_int > 24:
+        if station_input < 0 or station_input > 24:
             return False
         
         # Get station to determine number of lights
-        station : Als._Station = self.als.stations[station_int]
+        station : Als._Station = self.als.stations[station_input]
 
-        # Check if input number is within range
-        if light_int < 0 or light_int > station.size:
+        # Check if light input number is within range
+        if light_input < 0 or light_input > station.size:
             return False
         
         # Returns True if all other statements are passed
