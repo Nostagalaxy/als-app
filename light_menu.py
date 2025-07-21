@@ -10,7 +10,7 @@ class LightMenu(Screen):
     
     CSS_PATH = "css/light_menu.tcss"
 
-    def __init__(self, light : Als._Light, name: str | None = None, id: str | None = None, classes: str | None = None) -> None:
+    def __init__(self, light : Als.Light, name: str | None = None, id: str | None = None, classes: str | None = None) -> None:
         super().__init__(name, id, classes)
         self.light = light
 

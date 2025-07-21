@@ -26,12 +26,12 @@ class MyApp(App):
         if event.button.id == "light_select":
             # Check inputs have data and data is correct
             if self.__is_valid_input():
-                light : Als._Light = self.__get_light()
+                light : Als.Light = self.__get_light_from_input()
                 self.push_screen(LightMenu(light))
             else:
                 self.log("Invalid selection")
 
-    def __get_light(self) -> Als._Light:
+    def __get_light_from_input(self) -> Als.Light:
         station = int(self.query_one("#station_input", Input).value)
         light = int(self.query_one("#light_input", Input).value)
         return self.als.get_light(station, light)

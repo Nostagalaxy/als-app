@@ -13,7 +13,7 @@ class Als:
         INS = 1
         OTS = 2
 
-    class _Light:
+    class Light:
         def __init__(self, pos : int, station_id : int, color : str) -> None:
             self.pos = pos
             self.color = color
@@ -82,7 +82,7 @@ class Als:
                 color = subgroup[1]
                 # Init a light object and add it to station 
                 for i in range(1, num_color + 1):
-                    light = self._Light(light_pos, station_num, color)
+                    light = self.Light(light_pos, station_num, color)
                     light_pos += 1
                     new_station.add_light(light)
             # Add station to station list
