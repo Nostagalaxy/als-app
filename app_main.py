@@ -1,5 +1,5 @@
 from textual.app import App, ComposeResult
-from textual.widgets import Header, Footer, Button, Input
+from textual.widgets import Header, Footer, Button, Input, Static
 
 from als_diagram import ALSFDiagram
 from als import Als
@@ -23,19 +23,27 @@ class MyApp(App):
         yield Footer()
 
     def on_button_pressed(self, event : Button.Pressed):
-
         if event.button.id == "light_select":
             # Check inputs have data and data is correct
             if self.__is_valid_input():
-                self.push_screen(LightMenu())
+                light : Als._Light = self.__get_light()
+                self.push_screen(LightMenu(light))
             else:
                 self.log("Invalid selection")
 
+    def __get_light(self) -> Als._Light:
+        station = int(self.query_one("#station_input", Input).value)
+        light = int(self.query_one("#light_input", Input).value)
+        return self.als.get_light(station, light)
+
     def __is_valid_input(self) -> bool:
         # Get data from inputs
-        station_input = int(self.query_one("#station_input", Input).value)
-        light_input = int(self.query_one("#light_input", Input).value)
-        
+        try:
+            station_input = int(self.query_one("#station_input", Input).value)
+            light_input = int(self.query_one("#light_input", Input).value)
+        except ValueError:
+            return False
+
         # Check if number is within range
         if station_input < 0 or station_input > 24:
             return False
