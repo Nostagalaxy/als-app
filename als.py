@@ -1,6 +1,8 @@
 from enum import Enum
 from rich import print
 
+import sqlite3
+
 class Als:
 
     #                                   TODO  
@@ -18,10 +20,15 @@ class Als:
             self.pos = pos
             self.color = color
             self.station_id = station_id
+            self.log_db = self.__get_light_data(station_id, pos)
 
         def __str__(self):
             """Return string representation of object"""
             return f"[*Light* Station : {self.station_id}, Pos : {self.pos}, Color : {self.color}]"
+
+        def __get_light_data(self, station_id : int, pos : int):
+            
+            pass
 
     class _Station:
 

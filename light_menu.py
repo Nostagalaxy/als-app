@@ -1,7 +1,7 @@
 from textual.screen import Screen
 from textual.containers import Grid, Vertical
 from textual.app import ComposeResult
-from textual.widgets import Button, Static, RadioButton, RadioSet
+from textual.widgets import Button, DataTable, Static, RadioButton, RadioSet
 
 from als import Als
 
@@ -27,7 +27,7 @@ class LightMenu(Screen):
                     yield RadioButton("Transciever")
                 yield Button("Quit", id="quit")
             with Vertical(id='right_panel'):
-                yield Static('Right Side')
+                yield DataTable()
 
     def on_button_pressed(self, event : Button.Pressed) -> None:
         if event.button.id == "quit":
