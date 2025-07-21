@@ -1,32 +1,61 @@
 Grid {
-    background: white;
-    grid-size: 2 1;
+    background: $primary-background-darken-3;
+    grid-size: 2 2;
 }
 
 Static {
-    content-align: center middle;
+    content-align: left middle;
     width: 20;
 }
 
 Checkbox {
     content-align: left middle;
+    border: none;
 }
 
-#left_panel {
+DataTable {
+    height: 80%;
+}
+
+Horizontal {
+    align: center middle;
+}
+
+#info_panel {
     align: center top;
     width: 1fr;
+    border: heavy aquamarine;
+    height: 20;
+}
+
+#info_panel Button {
+    align: center bottom;
 }
 
 #lm_static_ots {
     align: center middle;
 }
 
-#right_panel {
+#status_panel {
+    border: heavy lawngreen;
+}
+
+#data_panel {
     width: 1fr;
-    border: thick yellow;
+    height: 100%;
+    border: heavy aquamarine;
+    row-span: 2;
 }
 
 #quit {
     content-align: center middle;
     background: darkgray;
+}
+
+.alert #status_panel {
+
+}
+
+.failure #status_panel {
+
 }
