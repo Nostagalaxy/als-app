@@ -1,11 +1,24 @@
 Grid {
-    background: lightgray;
+    background: white;
     grid-size: 2 1;
 }
 
+Static {
+    content-align: center middle;
+    width: 20;
+}
+
+Checkbox {
+    content-align: left middle;
+}
+
 #left_panel {
-    align: right middle;
+    align: center top;
     width: 1fr;
+}
+
+#lm_static_ots {
+    align: center middle;
 }
 
 #right_panel {
@@ -13,11 +26,7 @@ Grid {
     border: thick yellow;
 }
 
-RadioButton {
-    width: 20;
-    height: 3;
-}
-
 #quit {
-    background: orange;
+    content-align: center middle;
+    background: darkgray;
 }

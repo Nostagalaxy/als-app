@@ -1,5 +1,5 @@
 from textual.widgets import Label, Input, Button
-from textual.containers import Vertical, Horizontal, Grid
+from textual.containers import Vertical, Horizontal
 from textual.widget import Widget
 from textual.app import ComposeResult
 
@@ -12,14 +12,17 @@ class SideMenu(Widget):
             # Status Button
             with Horizontal(classes="line", id="status_line"):
                 yield Button("Good", classes="sideb_wid", id="status")
+            
             # Input Title
             with Horizontal(classes="line"):
                 yield Label("Select Light", classes="sideb_wid", id="label")
+            
             # Station input line
             with Horizontal(classes="line"):
                 yield Label("Station:", classes="sideb_wid", id="in_station_label")
                 yield Input(classes="sideb_wid", id="station_input", type="integer", max_length=2)
                 yield Label(classes="in_spacer")
+            
             # Light input line
             with Horizontal(classes="line"):       
                 yield Label("Light:", classes="sideb_wid", id="in_light_label")
