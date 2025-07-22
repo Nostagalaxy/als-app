@@ -78,9 +78,10 @@ class ALSFDiagram(Widget):
 
         # TODO - Fix this section of code
         # If event is a LightTile
-        elif(isinstance(event.widget, self.LightTile)):
-            # DEBUG
-            self.log("Light tile selected : " + str(event.widget))
+        
+        # elif(isinstance(event.widget, self.LightTile)):
+        #     # DEBUG
+        #     self.log("Light tile selected : " + str(event.widget))
 
         # DEBUG
         self.log(str(self.current_station))
