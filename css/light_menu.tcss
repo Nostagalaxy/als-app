@@ -1,6 +1,13 @@
+
+LightMenu {
+    align: center middle;
+}
+
 Grid {
     background: $primary-background-darken-3;
     grid-size: 2 2;
+    height: 20;
+    width: 100;
 }
 
 Static {
@@ -14,8 +21,28 @@ Checkbox {
 }
 
 DataTable {
+    background: gray 20%;
+    padding: 1;
+    margin: 1;
     height: 80%;
 }
+
+Input {
+    background: green 10%;
+
+}
+
+Button {
+    border: none;
+    background: gray 30%;
+    
+}
+
+Horizontal {
+    align: center middle;
+}
+
+Input
 
 Horizontal {
     align: center middle;
@@ -41,6 +68,7 @@ Horizontal {
 }
 
 #data_panel {
+    align: center middle;
     width: 1fr;
     height: 100%;
     border: heavy aquamarine;
@@ -58,4 +86,8 @@ Horizontal {
 
 .failure #status_panel {
 
+}
+
+.data_button {
+    width: 5;
 }

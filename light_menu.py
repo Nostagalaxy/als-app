@@ -1,4 +1,4 @@
-from textual.screen import Screen
+from textual.screen import ModalScreen
 from textual.containers import Grid, Vertical, Horizontal
 from textual.app import ComposeResult
 from textual.widgets import Button, DataTable, Static, Checkbox, Header, Footer, Input
@@ -8,7 +8,7 @@ from rich.text import Text
 
 from als import Als
 
-class LightMenu(Screen):
+class LightMenu(ModalScreen):
     """Screen for data and settings for Light"""
     
     CSS_PATH = "css/light_menu.tcss"
@@ -50,17 +50,15 @@ class LightMenu(Screen):
                 yield Static("Loop    :")
                 yield Static("Address :")
 
-
-
                 yield Button("Quit", id="quit")
 
             with Vertical(id='data_panel'):
                 yield DataTable()
                 yield Input()
                 with Horizontal():
-                    yield Button("Log")
-                    yield Button("Edit")
-                    yield Button("Delete")
+                    yield Button("Log", variant="primary", classes="data_button")
+                    yield Button("Edit", classes="data_button")
+                    yield Button("Delete", classes="data_button")
 
             with Vertical(name="Light Status", id="status_panel") as Status:
                 Status.border_title = "Status"
