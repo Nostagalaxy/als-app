@@ -1,0 +1,93 @@
+
+LightMenu {
+    align: center middle;
+}
+
+Grid {
+    background: $primary-background-darken-3;
+    grid-size: 2 2;
+    height: 20;
+    width: 100;
+}
+
+Static {
+    content-align: left middle;
+    width: 20;
+}
+
+Checkbox {
+    content-align: left middle;
+    border: none;
+}
+
+DataTable {
+    background: gray 20%;
+    padding: 1;
+    margin: 1;
+    height: 80%;
+}
+
+Input {
+    background: green 10%;
+
+}
+
+Button {
+    border: none;
+    background: gray 30%;
+    
+}
+
+Horizontal {
+    align: center middle;
+}
+
+Input
+
+Horizontal {
+    align: center middle;
+}
+
+#info_panel {
+    align: center top;
+    width: 1fr;
+    border: heavy aquamarine;
+    height: 20;
+}
+
+#info_panel Button {
+    align: center bottom;
+}
+
+#lm_static_ots {
+    align: center middle;
+}
+
+#status_panel {
+    border: heavy lawngreen;
+}
+
+#data_panel {
+    align: center middle;
+    width: 1fr;
+    height: 100%;
+    border: heavy aquamarine;
+    row-span: 2;
+}
+
+#quit {
+    content-align: center middle;
+    background: darkgray;
+}
+
+.alert #status_panel {
+
+}
+
+.failure #status_panel {
+
+}
+
+.data_button {
+    width: 5;
+}

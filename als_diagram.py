@@ -10,7 +10,10 @@ from rich import print
 from side_menu import SideMenu
 
 class ALSFDiagram(Widget):
-    #TODO create info on diagram once parent class is developed.
+    
+    #                       TODO 
+    # create info on diagram once parent class is developed.
+    # Fix LightTile on_click() where click event is a Static or LightTile
 
     # Different style lights
     UNICODE_GREEN : str = "\U0001F7E2"
@@ -29,8 +32,9 @@ class ALSFDiagram(Widget):
             a light in the light field diagram usng Unicode icons.
         """
 
-        # Member Variables
-        is_blinking : bool = False
+        def __init__(self, content = "", *, expand = False, shrink = False, markup = True, name = None, id = None, classes = None, disabled = False):
+            super().__init__(content, expand=expand, shrink=shrink, markup=markup, name=name, id=id, classes=classes, disabled=disabled)
+            self.is_blinking : bool = False
 
         class Selected(Message):
             """ Message that has ID of light selected """
@@ -71,6 +75,12 @@ class ALSFDiagram(Widget):
 
         # Set previous station to current station
         self.previous_station = self.current_station
+
+        # TODO - Fix this section of code
+        # If event is a LightTile
+        elif(isinstance(event.widget, self.LightTile)):
+            # DEBUG
+            self.log("Light tile selected : " + str(event.widget))
 
         # DEBUG
         self.log(str(self.current_station))
