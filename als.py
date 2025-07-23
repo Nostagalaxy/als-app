@@ -51,12 +51,13 @@ class Als:
 
     def __init__(self) -> None:
         self.stations = []
-        #self.__load_stations_from_file(self.CONFIG_FILE)
+        self.__load_stations_from_file(self.CONFIG_FILE)
         self.db = DB(self.CONFIG_FILE)
-        self.__load_stations_from_db()
+        #self.__load_stations_from_db()
 
     def __load_stations_from_db(self):
-        station = self.Station()   
+        #station = self.Station()   
+        pass
 
     def __load_stations_from_file(self, file_name : str) -> None:
         """Load station settings from a config file"""
@@ -76,7 +77,7 @@ class Als:
             # TODO : Set up has_flasher for each station
 
             # Create a staton object
-            new_station = self._Station(station_num, False)
+            new_station = self.Station(station_num, False)
             # Get next line; Split light groups seperated by whitespace
             station_info = line.strip().split(' ')
             # ID for each light position

@@ -1,15 +1,14 @@
 import asyncio
-from textual.containers import VerticalScroll, Horizontal, Widget
+from textual.containers import VerticalScroll, Horizontal, Container
 from textual.events import Click
 from textual.widgets import Static
 from textual.app import ComposeResult
 from textual.message import Message
-from textual.color import Color
 from rich import print
 
 from side_menu import SideMenu
 
-class ALSFDiagram(Widget):
+class ALSFDiagram(Container):
     
     #                       TODO 
     # create info on diagram once parent class is developed.
@@ -23,8 +22,8 @@ class ALSFDiagram(Widget):
     ASCII_RED : str = "[bold red]O[/]"
     ASCII_WHITE : str = "[bold white]O[/]"
 
-    previous_station : Horizontal = None
-    current_station : Horizontal = None
+    previous_station : Horizontal
+    current_station : Horizontal
 
     class LightTile(Static):
         """ 
@@ -38,12 +37,15 @@ class ALSFDiagram(Widget):
 
         class Selected(Message):
             """ Message that has ID of light selected """
-            def __init__(self, light_id : str):
+            def __init__(self, light_id : int):
                 self.light_id : int = light_id
                 super().__init__()
 
         def on_click(self, event: Click) -> None:
-            self.log(str(event.widget.id))
+            if event.widget is not None:
+                self.log(str(event.widget.id))
+            else:
+                self.log("Widget is none!")
         
         # Blink when blink state is set to true
         async def blink(self) -> None:
@@ -57,11 +59,11 @@ class ALSFDiagram(Widget):
         """ Highlights station when diagram is clicked """
 
         # If event is a Horizontal 
-        if(isinstance(event.widget, Horizontal)):
+        if isinstance(event.widget, Horizontal):
             
             self.current_station = event.widget
         # If event is a LightTile
-        else:
+        elif event.widget is not None:
             # Get the Horizontal parent of LightTile
             self.current_station = event.widget.query_ancestor(Horizontal)
 

@@ -31,6 +31,8 @@ class MyApp(App):
             else:
                 self.log("Invalid selection")
 
+    # TODO -> Move this function under the ALS class
+
     def __get_light_from_input(self) -> Als.Light:
         station = int(self.query_one("#station_input", Input).value)
         light = int(self.query_one("#light_input", Input).value)
@@ -49,7 +51,7 @@ class MyApp(App):
             return False
         
         # Get station to determine number of lights
-        station : Als._Station = self.als.stations[station_input]
+        station : Als.Station = self.als.stations[station_input]
 
         # Check if light input number is within range
         if light_input < 0 or light_input > station.size:
