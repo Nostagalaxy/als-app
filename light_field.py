@@ -6,9 +6,7 @@ class LightField:
 
     #                                   TODO  
     #       - Set up has_flasher for each station in __load_stations_from_file()
-    #       - Create multiple config files for different systems 
-
-    CONFIG_FILE = "als_config.txt"
+    #       - Create multiple databases for different systems 
 
     class __Station:
 
@@ -109,51 +107,6 @@ class LightField:
             if lights_data is not None:
                 for row in lights_data:
                     cur_station.add_light(row)
-
-            
-
-
-
-    # def __load_stations_from_file(self, file_name : str) -> None:
-    #     """Load station settings from a config file"""
-        
-    #     # Counter for station init
-    #     station_num = 0
-
-    #     # In config file, each line represents a station,
-    #     # each line (station) has a group of lights seperated by spaces,
-    #     # each group is seperated by a '-' with left side representing
-    #     # number of lights and right side representing the color.
-
-    #     # Open config file
-    #     file = open(file_name, 'r')
-
-    #     for line in file:
-    #         # TODO : Set up has_flasher for each station
-
-    #         # Create a staton object
-    #         new_station = self.__Station(station_num, 1, True, False)
-    #         # Get next line; Split light groups seperated by whitespace
-    #         station_info = line.strip().split(' ')
-    #         # ID for each light position
-    #         light_pos = 1
-    #         for group in station_info:
-                
-    #             # Seperate num of lights and color for each group
-    #             subgroup = group.split('-')
-    #             num_color = int(subgroup[0])
-    #             color = subgroup[1]
-    #             # Init a light object and add it to station 
-    #             for i in range(1, num_color + 1):
-    #                 light = self.__Station.__Light(light_pos, station_num, color)
-    #                 light_pos += 1
-    #                 new_station.add_light(light)
-    #         # Add station to station list
-    #         self.stations.append(new_station)
-    #         # increase station counter
-    #         station_num += 1
-            
-    #     file.close()
 
     def get_light(self, station_id : int, light_pos : int):
         # Get station
