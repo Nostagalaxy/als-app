@@ -6,14 +6,14 @@ from textual.widgets import Button, DataTable, Static, Checkbox, Header, Footer,
 from rich.panel import Panel
 from rich.text import Text
 
-from als import Als
+from light_field import LightField
 
 class LightMenu(ModalScreen):
     """Screen for data and settings for Light"""
     
     CSS_PATH = "css/light_menu.tcss"
 
-    def __init__(self, light : Als.Light, name: str | None = None, id: str | None = None, classes: str | None = None) -> None:
+    def __init__(self, light : LightField.__Light, name: str | None = None, id: str | None = None, classes: str | None = None) -> None:
         super().__init__(name, id, classes)
         self.light = light
 

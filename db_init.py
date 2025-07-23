@@ -18,11 +18,11 @@ class DatabaseInterface:
         self.connection.close()
 
     def get_all_stations(self):
+        """Returns list of stations : tuple (id, station_id, num_lights, status, has_flasher)"""
         try:
             self.cursor.execute("SELECT * FROM stations")
             rows = self.cursor.fetchall()
-
-            # Returns tuple (id, station_id, num_lights, status, has_flasher)
+            
             return rows
         except (sqlite3.Error):
             print("Error loading stations from database.")

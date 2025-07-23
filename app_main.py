@@ -2,7 +2,7 @@ from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, Button, Input, Static
 
 from als_diagram import ALSFDiagram
-from als import Als
+from light_field import LightField
 from side_menu import SideMenu
 from light_menu import LightMenu
 
@@ -12,9 +12,11 @@ class MyApp(App):
         "css/side_menu.tcss"
     ]
 
+    DB_FILE_PATH = "databases/als.db"
+
     def __init__(self):
         super().__init__()
-        self.als = Als()
+        self.als = LightField(self.DB_FILE_PATH)
 
     def compose(self) -> ComposeResult:
         yield Header(True, name="A.D.A.M")
@@ -26,14 +28,14 @@ class MyApp(App):
         if event.button.id == "light_select":
             # Check inputs have data and data is correct
             if self.__is_valid_input():
-                light : Als.Light = self.__get_light_from_input()
+                light : LightField.__Light = self.__get_light_from_input()
                 self.push_screen(LightMenu(light))
             else:
                 self.log("Invalid selection")
 
     # TODO -> Move this function under the ALS class
 
-    def __get_light_from_input(self) -> Als.Light:
+    def __get_light_from_input(self) -> LightField.__Light:
         station = int(self.query_one("#station_input", Input).value)
         light = int(self.query_one("#light_input", Input).value)
         return self.als.get_light(station, light)
@@ -51,7 +53,7 @@ class MyApp(App):
             return False
         
         # Get station to determine number of lights
-        station : Als.Station = self.als.stations[station_input]
+        station : LightField.__Station = self.als.stations[station_input]
 
         # Check if light input number is within range
         if light_input < 0 or light_input > station.size:

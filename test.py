@@ -1,10 +1,10 @@
-from als import Als
-from db_init import DatabaseInterface as DB
+from light_field import LightField
 
 def main():
-    db = DB("databases/als.db")
-    db.get_all_stations()
-    db.commit()
+    DB_FILE = "databases/als.db"
+
+    als = LightField(DB_FILE)
+    print(als)
 
 if __name__ == "__main__":
     main() 

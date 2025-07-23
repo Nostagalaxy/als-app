@@ -2,7 +2,7 @@ from rich import print
 
 from db_init import DatabaseInterface as DB
 
-class Als:
+class LightField:
 
     #                                   TODO  
     #       - Set up has_flasher for each station in __load_stations_from_file()
@@ -10,7 +10,7 @@ class Als:
 
     CONFIG_FILE = "als_config.txt"
 
-    class Light:
+    class __Light:
         def __init__(self, pos : int, station_id : int, color : str) -> None:
             self.pos = pos
             self.color = color
@@ -25,38 +25,65 @@ class Als:
             
             pass
 
-    class Station:
-
-        def __init__(self, id : int, has_flasher : bool) -> None:
+    class __Station:
+        # Attr : id, station_id, num_lights, status, has_flasher)
+        def __init__(self, id : int, num_lights : int, status : bool, has_flasher : bool) -> None:
             self.id = id
+            self.num_lights = num_lights
+            self.status = status
             self.has_flasher = has_flasher
             self.lights = []
+            self.lights_out = []
             self.size : int = 0
+
+        def get_light(self, pos : int) -> "LightField.__Light":
+            """Get light from indicated position."""
+            return self.lights[pos - 1]
+        
+        def get_size(self) -> int:
+            """Returns number of lights station has."""
+            return self.num_lights
+        
+        def set_status(self, status : bool) -> None:
+            self.status = status
 
         def add_light(self, light) -> None:
             """Add light to station"""
             self.lights.append(light)
             self.size += 1 
 
-        def get_light(self, pos : int):
-            """Get light from indicated position"""
-            return self.lights[pos - 1]
-        
-        def get_size(self) -> int:
-            return self.size
-
         def __str__(self):
             """Return string representation of object"""
-            return f"[*Station* ID : {self.id}, Flasher : {self.has_flasher}]"
+            return f"[*Station* (ID : {self.id}), (Number of Lights : {self.num_lights}), (Status : {self.status}), (Flasher : {self.has_flasher})]"
 
-    def __init__(self) -> None:
+    def __init__(self, database_file_path : str) -> None:
         self.stations = []
-        self.__load_stations_from_file(self.CONFIG_FILE)
-        self.db = DB(self.CONFIG_FILE)
-        #self.__load_stations_from_db()
+        #self.__load_stations_from_file(self.CONFIG_FILE)
+        self.db = DB(database_file_path)
+        self.__load_stations_from_db()
 
-    def __load_stations_from_db(self):
-        #station = self.Station()   
+    def __load_stations_from_db(self) -> None:
+        # Get list of station data from database
+        station_data_rows = self.db.get_all_stations()
+
+        # Initialize each station with data from the list
+        if station_data_rows is not None:
+            for row in station_data_rows:
+                
+                try:
+                    # Attr : id, station_id, num_lights, status, has_flasher)
+                    station_id : int = int(row[1])
+                    num_lights : int = int(row[2])
+                    status : bool = bool(row[3])
+                    has_flasher : bool = bool(row[4])
+
+                    cur_station = LightField.__Station(station_id, num_lights, status, has_flasher)
+
+                    # Add to list of stations
+                    self.stations.append(cur_station)
+
+                except ValueError:
+                    print("[bold red]ERROR[/bold red] : Failed to parse station data from database")
         pass
 
     def __load_stations_from_file(self, file_name : str) -> None:
@@ -77,7 +104,7 @@ class Als:
             # TODO : Set up has_flasher for each station
 
             # Create a staton object
-            new_station = self.Station(station_num, False)
+            new_station = self.__Station(station_num, 1, True, False)
             # Get next line; Split light groups seperated by whitespace
             station_info = line.strip().split(' ')
             # ID for each light position
@@ -90,7 +117,7 @@ class Als:
                 color = subgroup[1]
                 # Init a light object and add it to station 
                 for i in range(1, num_color + 1):
-                    light = self.Light(light_pos, station_num, color)
+                    light = self.__Light(light_pos, station_num, color)
                     light_pos += 1
                     new_station.add_light(light)
             # Add station to station list
