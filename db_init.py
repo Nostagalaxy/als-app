@@ -21,8 +21,22 @@ class DatabaseInterface:
         """Returns list of stations : tuple (id, station_id, num_lights, status, has_flasher)"""
         try:
             self.cursor.execute("SELECT * FROM stations")
-            rows = self.cursor.fetchall()
+            station_data = self.cursor.fetchall()
             
-            return rows
-        except (sqlite3.Error):
+            return station_data
+        
+        except sqlite3.Error:
             print("Error loading stations from database.")
+
+    def get_lights_from_station(self, input_station : int) -> list[tuple]| None:
+        """Returns a list of lights for a selected station"""
+        
+        # lights fields :  (id, station_id, pos, type, color, status, loop)
+        try:
+            self.cursor.execute("SELECT * FROM lights WHERE station_id = ?", (input_station,))
+            light_data = self.cursor.fetchall()
+
+            return light_data
+        
+        except sqlite3.Error:
+            print(f"ERROR : Unable load lights for station {input_station}")
