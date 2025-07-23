@@ -25,7 +25,7 @@ class Als:
             
             pass
 
-    class _Station:
+    class Station:
 
         def __init__(self, id : int, has_flasher : bool) -> None:
             self.id = id
@@ -56,7 +56,7 @@ class Als:
         self.__load_stations_from_db()
 
     def __load_stations_from_db(self):
-        
+        station = self.Station()   
 
     def __load_stations_from_file(self, file_name : str) -> None:
         """Load station settings from a config file"""
