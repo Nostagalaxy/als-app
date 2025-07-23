@@ -1,7 +1,3 @@
-from textual.containers import Widget
-from textual.widgets import Static
-from rich import print
-
 from als import Als
 from db_init import DatabaseInterface as DB
 

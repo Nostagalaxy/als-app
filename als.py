@@ -1,7 +1,6 @@
-from enum import Enum
 from rich import print
 
-import sqlite3
+from db_init import DatabaseInterface as DB
 
 class Als:
 
@@ -10,10 +9,6 @@ class Als:
     #       - Create multiple config files for different systems 
 
     CONFIG_FILE = "als_config.txt"
-
-    class _Status(Enum):
-        INS = 1
-        OTS = 2
 
     class Light:
         def __init__(self, pos : int, station_id : int, color : str) -> None:
@@ -56,7 +51,12 @@ class Als:
 
     def __init__(self) -> None:
         self.stations = []
-        self.__load_stations_from_file(self.CONFIG_FILE)
+        #self.__load_stations_from_file(self.CONFIG_FILE)
+        self.db = DB(self.CONFIG_FILE)
+        self.__load_stations_from_db()
+
+    def __load_stations_from_db(self):
+        
 
     def __load_stations_from_file(self, file_name : str) -> None:
         """Load station settings from a config file"""

@@ -1,5 +1,7 @@
 import sqlite3
 
+from als import Als.Stations
+
 class DatabaseInterface:
     def __init__(self, db_name: str):
         self.connection = sqlite3.connect(db_name)
@@ -14,3 +16,5 @@ class DatabaseInterface:
 
     def close(self):
         self.connection.close()
+
+    def get_all_stations(self):
