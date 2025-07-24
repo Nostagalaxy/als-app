@@ -3,7 +3,6 @@ from textual.containers import Grid, Vertical, Horizontal
 from textual.app import ComposeResult
 from textual.widgets import Button, DataTable, Static, Checkbox, Header, Footer, Input
 
-from rich.panel import Panel
 from rich.text import Text
 
 from light_field import LightField
@@ -23,7 +22,6 @@ class LightMenu(ModalScreen):
         with Grid():
             with Vertical(id="info_panel", markup=True) as Info:
                 Info.border_title = "Info"
-
 
                 # TODO Handle exception if light_data is None or invalid
 
@@ -73,8 +71,6 @@ class LightMenu(ModalScreen):
                 yield Checkbox("Light", id="lm_checkbox_light")
                 yield Checkbox("Transciever")
             
-            
-        
         yield Footer()
 
     def on_button_pressed(self, event : Button.Pressed) -> None:

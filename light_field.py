@@ -133,6 +133,22 @@ class LightField:
 
         return data
 
+    def get_station_data(self, station_id : int) -> dict:
+        # Check if station_id is valid
+        if station_id < 0 or station_id >= len(self.stations):
+            raise ValueError(f"Invalid station ID: {station_id}. Must be between 0 and {len(self.stations) - 1}.")
+        else:
+            # Get station
+            station : LightField.__Station = self.stations[station_id]
+            data = {
+                'id' : station.id,
+                'num_lights' : station.num_lights,
+                'status' : station.status,
+                'has_flasher' : station.has_flasher
+            }
+
+            return data
+
     def __str__(self):
         """Return string representation of object"""
         print("+++++++++ Stations ++++++++\n")
