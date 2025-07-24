@@ -18,6 +18,7 @@ class LightField:
                 self.type = type
                 self.color = color
                 self.status = status
+                self.is_dirty = False
 
             def __str__(self):
                 """Return string representation of object"""
@@ -68,7 +69,6 @@ class LightField:
 
     def __init__(self, database_file_path : str) -> None:
         self.stations = []
-        #self.__load_stations_from_file(self.CONFIG_FILE)
         self.db = DB(database_file_path)
         self.__load_system_db()
 
@@ -117,11 +117,11 @@ class LightField:
             station : LightField.__Station = self.stations[station_id]
         
         # Check if light position is valid
-        if light_pos < 0 or light_pos > station.size:
-            raise ValueError(f"Invalid light position: {light_pos}. Must be between 0 and {station.size - 1}.")
+        if light_pos < 1 or light_pos > station.size:
+            raise ValueError(f"Invalid light position: {light_pos}. Must be between 1 and {station.size - 1}.")
         else:
             # Get light from station
-            light : LightField.__Station._Light = station.lights[light_pos]
+            light : LightField.__Station._Light = station.lights[light_pos - 1]
 
             data = {
                 'station_id' : light.station_id,
@@ -148,14 +148,60 @@ class LightField:
             }
 
             return data
+        
+    def set_light_status(self, station_id : int, light_pos : int, status : bool) -> None:
+        """Set the status of a light in the database"""
+        # Check if station_id is valid
+        if station_id < 0 or station_id > len(self.stations):
+            raise ValueError(f"Invalid station ID: {station_id}. Must be between 0 and {len(self.stations)}.")
+        else:
+            # Get station
+            station : LightField.__Station = self.stations[station_id]
+        
+        # Check if light position is valid
+        if light_pos < 1 or light_pos > station.size:
+            raise ValueError(f"Invalid light position: {light_pos}. Must be between 1 and {station.size}.")
+        else:
+            # Get light from station
+            light : LightField.__Station._Light = station.lights[light_pos]
+
+            # Set light status
+            light.status = status
+            light.is_dirty = True
+
+            # Set status in database
+            self.db.set_status_of_light(station.id, light.pos, status)
+
+    def save_to_db(self) -> None:
+        """Add current state of lights to buffer"""
+        for station in self.stations:
+            for light in station.lights:
+                if light.is_dirty:
+                    self.db.set_status_of_light(station.id, light.pos, light.status)
+                    light.is_dirty = False
+
+    # DEBUGGING METHOD
+    def print_lights_from_station(self, station_id: int) -> None:
+        """Prints the light data for a given station"""
+        try:
+            if station_id < 0 or station_id >= len(self.stations):
+                raise ValueError(f"Invalid station ID: {station_id}. Must be between 0 and {len(self.stations) - 1}.")
+            
+            station : LightField.__Station = self.stations[station_id]
+            print(f"Lights for Station {station.id}:")
+            for light in station.lights:
+                print(light)
+        
+        except ValueError as e:
+            print(f"[bold red]ERROR[/bold red] : {e}")
 
     def __str__(self):
         """Return string representation of object"""
-        print("+++++++++ Stations ++++++++\n")
+        print("+++++++++++++++++ Stations ++++++++++++++++\n")
         for station in self.stations:
             print(station)
         
-        print("\n+++++++++ Lights ++++++++\n")
+        print("\n+++++++++++++++++ Lights ++++++++++++++++\n")
         for station in self.stations:
             for light in station.lights:
                 print(light)
