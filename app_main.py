@@ -35,10 +35,10 @@ class MyApp(App):
 
     # TODO -> Move this function under the ALS class
 
-    def __get_light_from_input(self) -> LightField.__Light:
+    def __get_light_from_input(self) -> dict:
         station = int(self.query_one("#station_input", Input).value)
         light = int(self.query_one("#light_input", Input).value)
-        return self.als.get_light(station, light)
+        return self.als.get_light_data(station, light)
 
     def __is_valid_input(self) -> bool:
         # Get data from inputs

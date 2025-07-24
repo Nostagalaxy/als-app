@@ -10,7 +10,7 @@ class LightField:
 
     class __Station:
 
-        class __Light:
+        class _Light:
             # fields (id, station_id, pos, type, color, status, loop)
             def __init__(self, station_id : int, pos : int, type :str,  color : str, status : bool) -> None:
                 self.station_id = station_id
@@ -23,17 +23,17 @@ class LightField:
                 """Return string representation of object"""
                 return f"[/Light Station : {self.station_id}, Pos : {self.pos}, Color : {self.color}]"
             
-        # Attr : id, station_id, num_lights, status, has_flasher)
+        # Attr : id, station_id, num_lights, status, has_flasher
         def __init__(self, id : int, num_lights : int, status : bool, has_flasher : bool) -> None:
             self.id = id
             self.num_lights = num_lights
             self.status = status
             self.has_flasher = has_flasher
-            self.lights : list[LightField.__Station.__Light] = []
-            self.lights_out : list[LightField.__Station.__Light] = []
+            self.lights : list[LightField.__Station._Light] = []
+            self.lights_out : list[LightField.__Station._Light] = []
             self.size : int = 0
 
-        def get_light(self, pos : int) -> "LightField.__Station.__Light":
+        def get_light(self, pos : int) -> "LightField.__Station._Light":
             """Get light from indicated position."""
             return self.lights[pos - 1]
         
@@ -54,7 +54,7 @@ class LightField:
                 status : bool = light_data[5]
                 # TODO Add loop
 
-                cur_light = self.__Light(self.id, pos, type, color, status)
+                cur_light = self._Light(self.id, pos, type, color, status)
 
                 self.lights.append(cur_light)
                 self.size += 1
@@ -81,7 +81,7 @@ class LightField:
             for row in station_data_rows:
                 
                 try:
-                    # Attr : id, station_id, num_lights, status, has_flasher)
+                    # Attr : id, station_id, num_lights, status, has_flasher
                     station_id : int = int(row[1])
                     num_lights : int = int(row[2])
                     status : bool = bool(row[3])
@@ -108,12 +108,30 @@ class LightField:
                 for row in lights_data:
                     cur_station.add_light(row)
 
-    def get_light(self, station_id : int, light_pos : int):
-        # Get station
-        station = self.stations[station_id]
+    def get_light_data(self, station_id : int, light_pos : int) -> dict:
+        # Check if station_id is valid
+        if station_id < 0 or station_id >= len(self.stations):
+            raise ValueError(f"Invalid station ID: {station_id}. Must be between 0 and {len(self.stations) - 1}.")
+        else:
+            # Get station
+            station : LightField.__Station = self.stations[station_id]
+        
+        # Check if light position is valid
+        if light_pos < 0 or light_pos > station.size:
+            raise ValueError(f"Invalid light position: {light_pos}. Must be between 0 and {station.size - 1}.")
+        else:
+            # Get light from station
+            light : LightField.__Station._Light = station.lights[light_pos]
 
-        # Get and return light
-        return station.get_light(light_pos)
+            data = {
+                'station_id' : light.station_id,
+                'pos' : light.pos,
+                'type' : light.type,
+                'color' : light.color,
+                'status' : light.status
+            }
+
+        return data
 
     def __str__(self):
         """Return string representation of object"""

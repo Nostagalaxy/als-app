@@ -13,10 +13,9 @@ class LightMenu(ModalScreen):
     
     CSS_PATH = "css/light_menu.tcss"
 
-    def __init__(self, light : LightField.__Light, name: str | None = None, id: str | None = None, classes: str | None = None) -> None:
+    def __init__(self, light_data : dict, name: str | None = None, id: str | None = None, classes: str | None = None) -> None:
         super().__init__(name, id, classes)
-        self.light = light
-
+        self.light_data = light_data
 
     def compose(self) -> ComposeResult:
         yield Header(True, name="Light Menu")
@@ -25,24 +24,30 @@ class LightMenu(ModalScreen):
             with Vertical(id="info_panel", markup=True) as Info:
                 Info.border_title = "Info"
 
+
+                # TODO Handle exception if light_data is None or invalid
+
                 # Station : #
-                content = Text.from_markup("[b]Station[/b] : " + "[bold purple]" + str(self.light.station_id) + "[/bold purple]")
+                content = Text.from_markup("[b]Station[/b] : " + "[bold purple]" + str(self.light_data['station_id']) + "[/bold purple]")
                 yield Static(content, classes="line")
                 
                 # Light : #
-                content = Text.from_markup("[b]Light[/b]   : " + "[bold purple]" + str(self.light.pos) + "[/bold purple]")
+                content = Text.from_markup("[b]Light[/b]   : " + "[bold purple]" + str(self.light_data['pos']) + "[/bold purple]")
                 yield Static(content, classes="line")
                 
                 # TODO
-                yield Static("Type    : ")
+                content = Text.from_markup("[b]Type[/b]    : " + "[bold]" + str(self.light_data['type']) + "[/bold]")
+                yield Static(content, classes="line")
 
                 # Get color code and interpret into a string
-                if self.light.color == 'g':
+                if self.light_data['color'] == 'green':
                     content = Text.from_markup("[b]Color[/b]   : " + "[bold green]Green[/bold green]")
-                elif self.light.color == 'r':
+                elif self.light_data['color'] == 'red':
                     content = Text.from_markup("[b]Color[/b]   : " + "[bold red]Red[/bold red]")
-                elif self.light.color == 'w':
+                elif self.light_data['color'] == 'white':
                     content = Text.from_markup("[b]Color[/b]   : " + "[bold white]White[/bold white]")
+                else:
+                    raise ValueError(f"Invalid color: {self.light_data['color']}")
                 
                 yield Static(content, classes="line")
 
