@@ -1,4 +1,5 @@
 from rich import print
+from textual.message import Message
 
 from db_init import DatabaseInterface as DB
 
@@ -71,6 +72,9 @@ class LightField:
         self.stations = []
         self.db = DB(database_file_path)
         self.__load_system_db()
+        
+        #DEBUG
+        print('Als Initialized')
 
     def __load_system_db(self) -> None:
         # Get list of station data from database
@@ -124,11 +128,11 @@ class LightField:
             light : LightField.__Station._Light = station.lights[light_pos - 1]
 
             data = {
-                'station_id' : light.station_id,
-                'pos' : light.pos,
+                'station_id' : int(light.station_id),
+                'pos' : int(light.pos),
                 'type' : light.type,
                 'color' : light.color,
-                'status' : light.status
+                'status' : bool(light.status)
             }
 
         return data
@@ -141,10 +145,10 @@ class LightField:
             # Get station
             station : LightField.__Station = self.stations[station_id]
             data = {
-                'id' : station.id,
-                'num_lights' : station.num_lights,
-                'status' : station.status,
-                'has_flasher' : station.has_flasher
+                'id' : int(station.id),
+                'num_lights' : int(station.num_lights),
+                'status' : bool(station.status),
+                'has_flasher' : bool(station.has_flasher)
             }
 
             return data
@@ -163,16 +167,16 @@ class LightField:
             raise ValueError(f"Invalid light position: {light_pos}. Must be between 1 and {station.size}.")
         else:
             # Get light from station
-            light : LightField.__Station._Light = station.lights[light_pos]
+            light : LightField.__Station._Light = station.lights[light_pos - 1]
 
             # Set light status
             light.status = status
             light.is_dirty = True
 
             # Set status in database
-            self.db.set_status_of_light(station.id, light.pos, status)
+            #self.db.set_status_of_light(station.id, light.pos, status)
 
-    def save_to_db(self) -> None:
+    def push_db_buffer(self) -> None:
         """Add current state of lights to buffer"""
         for station in self.stations:
             for light in station.lights:

@@ -1,7 +1,8 @@
 from textual.screen import ModalScreen
 from textual.containers import Grid, Vertical, Horizontal
 from textual.app import ComposeResult
-from textual.widgets import Button, DataTable, Static, Checkbox, Header, Footer, Input
+from textual.widgets import Button, DataTable, Static, Checkbox, Header, Footer, Input, Switch
+from textual.message import Message
 
 from rich.text import Text
 
@@ -12,9 +13,22 @@ class LightMenu(ModalScreen):
     
     CSS_PATH = "css/light_menu.tcss"
 
+    class StatusChanged(Message):
+        def __init__(self, station_id : int, light_pos : int, updated_status : bool) -> None:
+            super().__init__()
+            self.station_id = station_id
+            self.light_pos = light_pos
+            self.updated_status = updated_status
+
+    class Exit(Message):
+        def __init__(self) -> None:
+            super().__init__()
+
     def __init__(self, light_data : dict, name: str | None = None, id: str | None = None, classes: str | None = None) -> None:
         super().__init__(name, id, classes)
         self.light_data = light_data
+
+        self.log("Light Menu Initialized")
 
     def compose(self) -> ComposeResult:
         yield Header(True, name="Light Menu")
@@ -67,7 +81,8 @@ class LightMenu(ModalScreen):
                 Status.border_title = "Status"
                 content = Text.from_markup("[bold red]OTS[/bold red]")
                 yield Static(content,classes="leftside_line")
-                
+                yield Switch(value=self.light_data['status'])
+
                 yield Checkbox("Light", id="lm_checkbox_light")
                 yield Checkbox("Transciever")
             
@@ -77,6 +92,23 @@ class LightMenu(ModalScreen):
         if event.button.id == "quit":
             self.app.pop_screen()  
 
-    def on_checkbox_changed(self, event : Checkbox.Changed) -> None:
-        if event.checkbox:
-            self.log("Checkbox Changed") 
+    def on_switch_changed(self, event : Switch.Changed) -> None:
+        # Check if the status has changed
+        if event.switch.value is not self.light_data['status']:
+            
+            #DEBUG
+            self.log(f'Light Menu Event : SWITCH : {event.switch.value}')
+            
+            # Update the status in the menu
+            self.light_data['status'] = event.switch.value
+
+            #DEBUG
+            self.log(f"Light Menu STATUS update : {self.light_data['status']}")
+
+            # Post message to update light field
+            self.post_message(
+                self.StatusChanged(
+                    self.light_data['station_id'],                                  
+                    self.light_data['pos'], 
+                    event.switch.value))
+            

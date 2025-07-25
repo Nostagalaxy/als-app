@@ -7,8 +7,6 @@ from textual.app import ComposeResult
 from textual.message import Message
 from rich import print
 
-from side_menu import SideMenu
-
 class ALSFDiagram(Container):
     
     #                       TODO 

@@ -33,12 +33,25 @@ class MyApp(App):
             else:
                 self.log("Invalid input light selection")
 
+    def on_light_menu_status_changed(self, message : LightMenu.StatusChanged):
+        self.als.set_light_status(message.station_id, message.light_pos, message.updated_status)
+
+    def on_light_menu_exit(self, event : LightMenu.Exit):
+        if event is LightMenu.Exit:
+            pass
+            self.als.push_db_buffer()
+    
     # TODO -> Move this function under the ALS class
 
     def get_light_from_input(self) -> dict:
         station = int(self.query_one("#station_input", Input).value)
         light = int(self.query_one("#light_input", Input).value)
-        return self.als.get_light_data(station, light)
+        data = self.als.get_light_data(station, light)
+        
+        #DEBUG
+        self.log(data)
+        
+        return data
 
     def is_valid_input(self) -> bool:
         # Get data from inputs
