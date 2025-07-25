@@ -1,6 +1,7 @@
 import asyncio
 from textual.containers import VerticalScroll, Horizontal, Container
 from textual.events import Click
+from textual.widget import Widget
 from textual.widgets import Static
 from textual.app import ComposeResult
 from textual.message import Message
@@ -22,8 +23,7 @@ class ALSFDiagram(Container):
     ASCII_RED : str = "[bold red]O[/]"
     ASCII_WHITE : str = "[bold white]O[/]"
 
-    previous_station : Horizontal
-    current_station : Horizontal
+    
 
     class LightTile(Static):
         """ 
@@ -55,38 +55,38 @@ class ALSFDiagram(Container):
                 self.remove_class("blink")
                 await asyncio.sleep(1.0)
 
+    def __init__(self, *children: Widget, name: str | None = None, id: str | None = None, classes: str | None = None, disabled: bool = False, markup: bool = True) -> None:
+        super().__init__(*children, name=name, id=id, classes=classes, disabled=disabled, markup=markup)
+        self.previous_station : Horizontal | None = None
+        self.current_station : Horizontal | None = None
+
+
     def on_click(self, event : Click):
         """ Highlights station when diagram is clicked """
 
+        # Update current station
+        if event.widget is None:
+            pass
         # If event is a Horizontal 
-        if isinstance(event.widget, Horizontal):
+        elif isinstance(event.widget, Horizontal):
             
             self.current_station = event.widget
         # If event is a LightTile
-        elif event.widget is not None:
+        else:
             # Get the Horizontal parent of LightTile
             self.current_station = event.widget.query_ancestor(Horizontal)
 
         # Check if a previous station is highlighted
-        if(self.previous_station is not None):
+        if self.previous_station is not None:
             # Un-highlight that station
             self.previous_station.styles.background = 'yellow 0%'
         
-        # Highlight selected station
-        self.current_station.styles.background = 'yellow 20%'
+        # Highlight selected station if available
+        if self.current_station is not None:
+            self.current_station.styles.background = 'yellow 20%'
 
         # Set previous station to current station
         self.previous_station = self.current_station
-
-        # TODO - Fix this section of code
-        # If event is a LightTile
-        
-        # elif(isinstance(event.widget, self.LightTile)):
-        #     # DEBUG
-        #     self.log("Light tile selected : " + str(event.widget))
-
-        # DEBUG
-        self.log(str(self.current_station))
 
     def compose(self):
         """ Composes all widgets of the Diagram"""
