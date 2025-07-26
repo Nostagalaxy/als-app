@@ -5,8 +5,10 @@ from textual.app import ComposeResult
 
 class SideMenu(Widget):
 
-    # TODO fix the nightmare that is on_compose() 
-
+    # TODO fix this nightmare
+    # |   |   |   |   |   |
+    # v   v   v   v   v   v
+    
     def compose(self) -> ComposeResult:
         with Vertical():
             # Status Button

@@ -2,7 +2,7 @@ from textual.app import App, ComposeResult
 from textual.widgets import Header, Footer, Button, Input, Static
 
 from als_diagram import ALSFDiagram
-from als import Als
+from light_field import LightField
 from side_menu import SideMenu
 from light_menu import LightMenu
 
@@ -12,9 +12,7 @@ class MyApp(App):
         "css/side_menu.tcss"
     ]
 
-    def __init__(self):
-        super().__init__()
-        self.als = Als()
+    DB_FILE_PATH = "databases/als.db"
 
     def compose(self) -> ComposeResult:
         yield Header(True, name="A.D.A.M")
@@ -22,21 +20,31 @@ class MyApp(App):
         yield SideMenu(id='sidebar')
         yield Footer()
 
+    def on_mount(self) -> None:
+        self.als = LightField(self.DB_FILE_PATH)
+
     def on_button_pressed(self, event : Button.Pressed):
         if event.button.id == "light_select":
             # Check inputs have data and data is correct
-            if self.__is_valid_input():
-                light : Als.Light = self.__get_light_from_input()
-                self.push_screen(LightMenu(light))
+            if self.is_valid_input():
+                light_data : dict = self.get_light_from_input()
+                self.push_screen(LightMenu(light_data))
             else:
-                self.log("Invalid selection")
+                self.log("Invalid input light selection")
 
-    def __get_light_from_input(self) -> Als.Light:
+    def on_light_menu_status_changed(self, message : LightMenu.StatusChanged):
+        self.als.set_light_status(message.station_id, message.light_pos, message.updated_status)
+
+    # TODO -> Move this function under the ALS class
+
+    def get_light_from_input(self) -> dict:
         station = int(self.query_one("#station_input", Input).value)
         light = int(self.query_one("#light_input", Input).value)
-        return self.als.get_light(station, light)
+        data = self.als.get_light_data(station, light)
+        
+        return data
 
-    def __is_valid_input(self) -> bool:
+    def is_valid_input(self) -> bool:
         # Get data from inputs
         try:
             station_input = int(self.query_one("#station_input", Input).value)
@@ -49,10 +57,10 @@ class MyApp(App):
             return False
         
         # Get station to determine number of lights
-        station : Als._Station = self.als.stations[station_input]
+        num_lights : int = self.als.get_station_data(station_input)['num_lights']
 
         # Check if light input number is within range
-        if light_input < 0 or light_input > station.size:
+        if light_input < 0 or light_input > num_lights:
             return False
         
         # Returns True if all other statements are passed
