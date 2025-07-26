@@ -37,10 +37,6 @@ class MyApp(App):
         self.als.set_light_status(message.station_id, message.light_pos, message.updated_status)
         self.log(self.als.get_light_data(message.station_id, message.light_pos))
 
-    def on_light_menu_exit(self, event : LightMenu.Exit):
-        if event is LightMenu.Exit:
-            self.als.push_db_buffer()
-    
     # TODO -> Move this function under the ALS class
 
     def get_light_from_input(self) -> dict:

@@ -19,7 +19,6 @@ class LightField:
                 self.type = type
                 self.color = color
                 self.status = status
-                self.is_dirty = False
 
             def __str__(self):
                 """Return string representation of object"""
@@ -170,18 +169,9 @@ class LightField:
 
             # Set light status
             light.status = status
-            light.is_dirty = True
 
             # Set status in database
-            #self.db.set_status_of_light(station.id, light.pos, status)
-
-    def push_db_buffer(self) -> None:
-        """Add current state of lights to buffer"""
-        for station in self.stations:
-            for light in station.lights:
-                if light.is_dirty:
-                    self.db.set_status_of_light(station.id, light.pos, light.status)
-                    light.is_dirty = False
+            self.db.set_status_of_light(station.id, light.pos, status)
 
     # DEBUGGING METHOD
     def print_lights_from_station(self, station_id: int) -> None:
