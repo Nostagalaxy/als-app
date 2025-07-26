@@ -71,9 +71,6 @@ class LightField:
         self.stations = []
         self.db = DB(database_file_path)
         self.__load_system_db()
-        
-        #DEBUG
-        print('Als Initialized')
 
     def __load_system_db(self) -> None:
         # Get list of station data from database

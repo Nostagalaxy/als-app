@@ -28,8 +28,6 @@ class LightMenu(ModalScreen):
         super().__init__(name, id, classes)
         self.light_data = light_data
 
-        self.log("Light Menu Initialized")
-
     def compose(self) -> ComposeResult:
         yield Header(True, name="Light Menu")
         
@@ -96,14 +94,8 @@ class LightMenu(ModalScreen):
         # Check if the status has changed
         if event.switch.value is not self.light_data['status']:
             
-            #DEBUG
-            self.log(f'Light Menu Event : SWITCH : {event.switch.value}')
-            
             # Update the status in the menu
             self.light_data['status'] = event.switch.value
-
-            #DEBUG
-            self.log(f"Light Menu STATUS update : {self.light_data['status']}")
 
             # Post message to update light field
             self.post_message(

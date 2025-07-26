@@ -22,7 +22,6 @@ class MyApp(App):
 
     def on_mount(self) -> None:
         self.als = LightField(self.DB_FILE_PATH)
-        self.log(self.als.get_light_data(2, 2))
 
     def on_button_pressed(self, event : Button.Pressed):
         if event.button.id == "light_select":
@@ -35,7 +34,6 @@ class MyApp(App):
 
     def on_light_menu_status_changed(self, message : LightMenu.StatusChanged):
         self.als.set_light_status(message.station_id, message.light_pos, message.updated_status)
-        self.log(self.als.get_light_data(message.station_id, message.light_pos))
 
     # TODO -> Move this function under the ALS class
 
@@ -43,9 +41,6 @@ class MyApp(App):
         station = int(self.query_one("#station_input", Input).value)
         light = int(self.query_one("#light_input", Input).value)
         data = self.als.get_light_data(station, light)
-        
-        #DEBUG
-        self.log(data)
         
         return data
 
@@ -63,7 +58,6 @@ class MyApp(App):
         
         # Get station to determine number of lights
         num_lights : int = self.als.get_station_data(station_input)['num_lights']
-        self.log("Input is valid, number of lights: " + str(num_lights))
 
         # Check if light input number is within range
         if light_input < 0 or light_input > num_lights:
