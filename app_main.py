@@ -14,15 +14,15 @@ class MyApp(App):
 
     DB_FILE_PATH = "databases/als.db"
 
-    def __init__(self):
-        super().__init__()
-        self.als = LightField(self.DB_FILE_PATH)
-
     def compose(self) -> ComposeResult:
         yield Header(True, name="A.D.A.M")
         yield ALSFDiagram(id='diagram')
         yield SideMenu(id='sidebar')
         yield Footer()
+
+    def on_mount(self) -> None:
+        self.als = LightField(self.DB_FILE_PATH)
+        self.log(self.als.get_light_data(2, 2))
 
     def on_button_pressed(self, event : Button.Pressed):
         if event.button.id == "light_select":
@@ -35,10 +35,10 @@ class MyApp(App):
 
     def on_light_menu_status_changed(self, message : LightMenu.StatusChanged):
         self.als.set_light_status(message.station_id, message.light_pos, message.updated_status)
+        self.log(self.als.get_light_data(message.station_id, message.light_pos))
 
     def on_light_menu_exit(self, event : LightMenu.Exit):
         if event is LightMenu.Exit:
-            pass
             self.als.push_db_buffer()
     
     # TODO -> Move this function under the ALS class

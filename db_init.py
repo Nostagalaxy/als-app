@@ -35,7 +35,7 @@ class DatabaseInterface:
         try:
             self.cursor.execute("SELECT * FROM lights WHERE station_id = ?", (input_station,))
             light_data = self.cursor.fetchall()
-
+            
             return light_data
         
         except sqlite3.Error:

@@ -23,7 +23,7 @@ class LightField:
 
             def __str__(self):
                 """Return string representation of object"""
-                return f"[/Light Station : {self.station_id}, Pos : {self.pos}, Color : {self.color}]"
+                return f"[/Light Station : {self.station_id}, Pos : {self.pos}, Color : {self.color}, Static : {self.status}, Type : {self.type}]"
             
         # Attr : id, station_id, num_lights, status, has_flasher
         def __init__(self, id : int, num_lights : int, status : bool, has_flasher : bool) -> None:
@@ -83,7 +83,6 @@ class LightField:
         # Initialize each station with data from the list
         if station_data_rows is not None:
             for row in station_data_rows:
-                
                 try:
                     # Attr : id, station_id, num_lights, status, has_flasher
                     station_id : int = int(row[1])
