@@ -31,7 +31,6 @@ class LightField:
             self.status = status
             self.has_flasher = has_flasher
             self.lights : list[LightField.__Station._Light] = []
-            self.lights_out : list[LightField.__Station._Light] = []
             self.size : int = 0
 
         def get_light(self, pos : int) -> "LightField.__Station._Light":
@@ -145,8 +144,22 @@ class LightField:
                 'status' : bool(station.status),
                 'has_flasher' : bool(station.has_flasher)
             }
-
+            
             return data
+        
+    def get_lights_out(self) -> list[dict]:
+        """Get a list of lights that are out."""
+        lights_out = []
+        for station in self.stations:
+            for light in station.lights:
+                if not light.status:
+                    data = {
+                        'station_id' : station.id,
+                        'pos' : light.pos
+
+                    }
+                    lights_out.append(data)
+        return lights_out
         
     def set_light_status(self, station_id : int, light_pos : int, status : bool) -> None:
         """Set the status of a light in the database"""
