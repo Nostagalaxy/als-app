@@ -13,7 +13,8 @@ class LightField:
 
         class _Light:
             # fields (id, station_id, pos, type, color, status, loop)
-            def __init__(self, station_id : int, pos : int, type :str,  color : str, status : bool) -> None:
+            def __init__(self, db_id : int, station_id : int, pos : int, type :str,  color : str, status : bool) -> None:
+                self.db_id = db_id
                 self.station_id = station_id
                 self.pos = pos
                 self.type = type
@@ -48,13 +49,14 @@ class LightField:
             """Add light to station"""
             # fields (id, station_id, pos, type, color, status, loop)
             try:
+                db_id : int = light_data[0]
                 pos : int = light_data[2]
                 type : str = light_data[3]
                 color : str = light_data[4]
                 status : bool = light_data[5]
                 # TODO Add loop
 
-                cur_light = self._Light(self.id, pos, type, color, status)
+                cur_light = self._Light(db_id, self.id, pos, type, color, status)
 
                 self.lights.append(cur_light)
                 self.size += 1
