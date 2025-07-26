@@ -36,7 +36,20 @@ class Monitor():
     def __init__(self, light_field : LightField, type : str) -> None:
         self.als : LightField = light_field
         self.lights_out: tuple = []
+        self.overall_status: str = "Normal"
+        self.inner_1500_status: bool = True
+        self.outer_1500_status: bool = True
+        self.side_row_status: bool = True
+        self.threshold_status: bool = True
+        self.five_hundred_status: bool = True
+        self.one_thousand_status: bool = True
+        self.flashes_status: bool = True
 
         self.lights_out = self.als.get_lights_out()
+
+        self.update()
+
+    def update(self) -> None:
+        pass
 
     

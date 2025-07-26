@@ -1,7 +1,7 @@
 from rich import print
 from textual.message import Message
 
-from db_init import DatabaseInterface as DB
+from database_interface import DatabaseInterface as DB
 
 class LightField:
 
@@ -144,7 +144,7 @@ class LightField:
                 'status' : bool(station.status),
                 'has_flasher' : bool(station.has_flasher)
             }
-            
+
             return data
         
     def get_lights_out(self) -> list[dict]:
