@@ -21,8 +21,6 @@ class ALSFDiagram(Container):
     ASCII_RED : str = "[bold red]O[/]"
     ASCII_WHITE : str = "[bold white]O[/]"
 
-    
-
     class LightTile(Static):
         """ 
             Light Tile inherits the Static widget and represents
@@ -57,7 +55,6 @@ class ALSFDiagram(Container):
         super().__init__(*children, name=name, id=id, classes=classes, disabled=disabled, markup=markup)
         self.previous_station : Horizontal | None = None
         self.current_station : Horizontal | None = None
-
 
     def on_click(self, event : Click):
         """ Highlights station when diagram is clicked """
