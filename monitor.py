@@ -92,7 +92,8 @@ class Monitor():
                 previous_pos = light['pos']
 
             # DEBUG                        
-            print(f"Random tolerance exceeded :  {rand_lights_out > Monitor.Tolerances.THRESHOLD_RAND_LIGHTS_OUT} @ {rand_lights_out}\nAdjacent tolerance exceeded : {max_adj_out > Monitor.Tolerances.THRESHOLD_ADJ_LIGHTS_OUT} @ {max_adj_out}")
+            #print(f"Random tolerance exceeded :  {rand_lights_out > Monitor.Tolerances.THRESHOLD_RAND_LIGHTS_OUT} \
+            # @ {rand_lights_out}\nAdjacent tolerance exceeded : {max_adj_out > Monitor.Tolerances.THRESHOLD_ADJ_LIGHTS_OUT} @ {max_adj_out}")
             
             if(rand_lights_out > Monitor.Tolerances.THRESHOLD_RAND_LIGHTS_OUT 
                 or max_adj_out > Monitor.Tolerances.THRESHOLD_ADJ_LIGHTS_OUT):
@@ -109,7 +110,6 @@ class Monitor():
                 print("NORMAL")
                 return Monitor.State.NORMAL
                 
-    # Inner 1500 section
     class Inner1500(Section):
         """Inner 1500 section of the ALS system."""
         def __init__(self, status: 'Monitor.State') -> None:
@@ -117,13 +117,51 @@ class Monitor():
      
         def check(self) -> 'Monitor.State':
             """Check if the inner 1500 section is in an outage state."""
+        
+            # Get total random lights out
+            rand_lights_out: int = len(self.lights_out)
+            
+            # Update the bars out
+            self.update_bars()
+
+            # Check if the number of consecutive bars out exceeds the tolerance
             max_cons_bars_out: int = 0
             previous_bar: int = 0
             count_cons_bars_out: int = 0
 
-            # Get total random lights out
-            rand_lights_out: int = len(self.lights_out)
-            
+            for bar in self.bars_out:
+                # If the current bar is adjacent to the previous one
+                if bar - 1 == previous_bar or previous_bar == 0:
+                    # Increment count of consecutive bars out
+                    count_cons_bars_out += 1
+
+                    # Check if the count exceeds the maximum
+                    if count_cons_bars_out > max_cons_bars_out:
+                        max_cons_bars_out = count_cons_bars_out
+                else:
+                    # Reset count of consecutive bars out if not adjacent
+                    count_cons_bars_out = 0
+                
+                # Update previous bar
+                previous_bar = bar
+
+            if(rand_lights_out > Monitor.Tolerances.CENTER_INNER_1500_RAND_LIGHT_OUT
+                or max_cons_bars_out > Monitor.Tolerances.CENTER_INNER_1500_CONS_BAR_OUT):
+                #DEBUG
+                print(f"FAILURE inner 1500 : rand lights out = {rand_lights_out}, cons bars out = {max_cons_bars_out}")
+                return Monitor.State.FAILURE
+            elif(rand_lights_out == Monitor.Tolerances.CENTER_INNER_1500_RAND_LIGHT_OUT - 1
+                or max_cons_bars_out == Monitor.Tolerances.CENTER_INNER_1500_CONS_BAR_OUT):
+                #DEBUG
+                print(f"ALERT inner 1500 : rand lights out = {rand_lights_out}, cons bars out = {max_cons_bars_out}")
+                return Monitor.State.ALERT
+            else:
+                #DEBUG
+                print(f"NORMAL inner 1500 : rand lights out = {rand_lights_out}, cons bars out = {max_cons_bars_out}")
+                return Monitor.State.NORMAL
+                
+        def update_bars(self) -> None:
+            """Update the bars out in the inner 1500 section."""
             # First check if there are any bars out and add to self.bars_out
             cur_bar: int = 1
             cur_lights_out: int = 0
@@ -143,30 +181,15 @@ class Monitor():
 
                 if cur_lights_out > Monitor.Tolerances.FIVE_BAR_OUT:
 
-                    # DEBUG 
-                    print(f"Bar out inner 1500 : {cur_id} @ {cur_lights_out}")
+                    # DEBUG
+                    if cur_lights_out >= 3: 
+                        print(f"Bar out inner 1500 : {cur_id} @ {cur_lights_out}")
+
 
                     # Add bar to bars out if not already added
                     if cur_id not in self.bars_out:
                         self.bars_out.append(cur_id)
                         self.bars_out.sort()
-                
-
-            # DEBUG
-            #print(self.bars_out)
-
-            # Check for bars out
-
-            max_cons_bars_out: int = 0
-            previous_bar: int = 0
-            count_cons_bars_out: int = 0
-
-            for bar in self.bars_out:
-                pass
-                
-
-
-
 
 
 
