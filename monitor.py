@@ -66,10 +66,7 @@ class Monitor():
                 #DEBUG
                 print(f"FAILURE : rand lights out = {rand_lights_out}, adjacents = {adjacents}")
                 return Monitor.State.FAILURE
-            elif(rand_lights_out == rand_light_tolerance or
-                 rand_lights_out == rand_light_tolerance - 1 or
-                 adjacents == adjacent_tolerance or
-                 adjacents == adjacent_tolerance - 1):
+            elif(rand_lights_out == rand_light_tolerance or adjacents == adjacent_tolerance):
                 #DEBUG
                 print(f"ALERT : rand lights out = {rand_lights_out}, adjacents = {adjacents}")
                 return Monitor.State.ALERT
@@ -108,17 +105,57 @@ class Monitor():
                         self.bars_out.append(cur_id)
                         self.bars_out.sort()
 
-        def max_cons_bars(self) -> int:
+        def update_three_bars(self, section_lights_out) -> None:
+            """Update the bars out in the side rows section."""
+            # First check if there are any bars out and add to self.bars_out
+            cur_bar: int = 1
+            cur_lights_out: int = 0
+
+            for light in section_lights_out:
+                # If the station id matches the current station
+                cur_id = light['station_id']
+                
+                # Check if the current bar is the same as the current light station id
+                # If not, assign as current bar and reset current lights out
+                if cur_bar != cur_id:
+                    cur_bar = cur_id
+                    cur_lights_out = 0
+                
+                # Increment current lights out
+                cur_lights_out += 1
+
+                if cur_lights_out > Monitor.Tolerances.THREE_BAR_OUT:
+
+                    # Add bar to bars out if not already added
+                    if cur_id not in self.bars_out:
+                        self.bars_out.append(cur_id)
+                        self.bars_out.sort()
+
+        def max_cons_bars(self, wing_bar: list | None) -> int:
             """Count the number of consecutive bars out."""
             count: int = 0
             previous_bar: int = 0
+            
+            # If wing_bar is None, use self.bars_out
+            # Otherwise, use the wing_bar list
+            if wing_bar is None:
+                bars = self.bars_out
+            else:
+                # Extract station_id from each dict in the wing_bar list
+                bars = [light['station_id'] for light in wing_bar if isinstance(light, dict) and 'station_id' in light]
+                bars = sorted(list(set(bars)))
 
-            for bar in self.bars_out:
+            # Loop through each bar
+            for bar in bars:
+                # If the current bar is the same as the previous bar or if there is no previous bar
+                # Increment count if consecutive
                 if bar - 1 == previous_bar or previous_bar == 0:
                     count += 1
+                # If not consecutive, reset count
                 else:
                     count = 0
                 
+                # Update previous bar
                 previous_bar = bar
             
             return count
@@ -172,7 +209,7 @@ class Monitor():
             self.update_five_bars()
 
             # Check if the number of consecutive bars out exceeds the tolerance
-            max_cons_bars_out: int = self.max_cons_bars()
+            max_cons_bars_out: int = self.max_cons_bars(None)
 
             return self.check_tolerances(rand_lights_out, max_cons_bars_out, 
                 Monitor.Tolerances.CENTER_INNER_1500_RAND_LIGHT_OUT, Monitor.Tolerances.CENTER_INNER_1500_CONS_BAR_OUT)
@@ -193,12 +230,44 @@ class Monitor():
             self.update_five_bars()
 
             # Check if the number of consecutive bars out exceeds the tolerance
-            max_cons_bars: int = self.max_cons_bars()
+            max_cons_bars: int = self.max_cons_bars(None)
 
             return self.check_tolerances(rand_lights_out, max_cons_bars,
                 Monitor.Tolerances.CENTER_OUTER_1500_RAND_LIGHT_OUT, Monitor.Tolerances.CENTER_OUTER_1500_CONS_BAR_OUT)
         
-    # Rows section
+    class SideRows(Section):
+        """Side rows section of the ALS system."""
+        def __init__(self, status: 'Monitor.State') -> None:
+            super().__init__(status)
+
+        def split(self) -> None:
+            """Split the lights out into left and right wings."""
+            # Split the lights out into left and right wings
+            self.left_wing_lights_out = [light for light in self.lights_out if light['pos'] < 4]
+            self.right_wing_lights_out = [light for light in self.lights_out if light['pos'] >= 9]
+
+        def check(self) -> 'Monitor.State':
+            """Check if the side rows section is in an outage state."""
+            
+            # Split the lights out into left and right wings
+            self.split()
+
+            # Get total random lights out
+            rand_lights_out: int = len(self.lights_out)
+            
+            # Update the bars out
+            self.update_three_bars(self.left_wing_lights_out)
+            #DEBUG
+            print(f"Left wing lights out: {self.left_wing_lights_out}")
+            self.update_three_bars(self.right_wing_lights_out)
+            #DEBUG
+            print(f"Right wing lights out: {self.right_wing_lights_out}")
+
+            # Check if the number of consecutive bars out exceeds the tolerance
+            max_cons_bars: int = max(self.max_cons_bars(self.left_wing_lights_out), self.max_cons_bars(self.right_wing_lights_out))
+
+            return self.check_tolerances(rand_lights_out, max_cons_bars,
+                Monitor.Tolerances.SIDE_ROW_RAND_LIGHT_OUT, Monitor.Tolerances.SIDE_ROW_CONS_BAR_OUT)
 
     class FiveHundred(Section):
         """500' section of the ALS system."""
@@ -211,9 +280,19 @@ class Monitor():
             return self.check_tolerances(rand_lights_out, 0,
                 Monitor.Tolerances.FIVE_HUND_LIGHTS_OUT, 255) # No adjacent lights out tolerance
         
-    # 1000' section
+    class OneThousand(Section):
+        """1000' section of the ALS system."""
+        def __init__(self, status: 'Monitor.State') -> None:
+            super().__init__(status)
+
+        def check(self) -> 'Monitor.State':
+            """Check if the 1000' section is in an outage state."""
+            rand_lights_out: int = len(self.lights_out)
+            return self.check_tolerances(rand_lights_out, 0,
+                Monitor.Tolerances.ONE_THOUS_LIGHTS_OUT, 255) # No adjacent lights out tolerance
 
     #Flashers section
+    # TODO -> Implement flashers section
 
     def __init__(self, light_field : LightField, type : str) -> None:
         self.als : LightField = light_field
@@ -222,11 +301,11 @@ class Monitor():
 
         self.inner_1500 = Monitor.Inner1500(Monitor.State.NORMAL)
         self.outer_1500 = Monitor.Outer1500(Monitor.State.NORMAL)
-        self.side_rows = Monitor.Section(Monitor.State.NORMAL)      #TODO
+        self.side_rows = Monitor.SideRows(Monitor.State.NORMAL)
         self.threshold = Monitor.Threshold(Monitor.State.NORMAL)
-        self.five_hundred = Monitor.FiveHundred(Monitor.State.NORMAL)   #TODO
-        self.one_thousand = Monitor.Section(Monitor.State.NORMAL)   #TODO
-        self.flashers = Monitor.Section(Monitor.State.NORMAL)       #TODO
+        self.five_hundred = Monitor.FiveHundred(Monitor.State.NORMAL)
+        self.one_thousand = Monitor.OneThousand(Monitor.State.NORMAL)
+        self.flashers = Monitor.Section(Monitor.State.NORMAL)           #TODO
 
         self.update()
 
@@ -264,6 +343,8 @@ class Monitor():
         self.threshold.check()
         self.inner_1500.check()
         self.outer_1500.check()
+        self.side_rows.check()
         self.five_hundred.check()
+        self.one_thousand.check()
         
         return self.status
