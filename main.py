@@ -5,6 +5,7 @@ from als_diagram import ALSFDiagram
 from light_field import LightField
 from side_menu import SideMenu
 from light_menu import LightMenu
+from monitor import Monitor
 
 class MyApp(App):
     CSS_PATH = [
@@ -22,6 +23,8 @@ class MyApp(App):
 
     def on_mount(self) -> None:
         self.als = LightField(self.DB_FILE_PATH)
+        self.monitor = Monitor(self.als, "ALSF")
+
 
     def on_button_pressed(self, event : Button.Pressed):
         if event.button.id == "light_select":

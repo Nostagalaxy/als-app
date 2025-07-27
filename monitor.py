@@ -305,7 +305,18 @@ class Monitor():
         self.threshold = Monitor.Threshold(Monitor.State.NORMAL)
         self.five_hundred = Monitor.FiveHundred(Monitor.State.NORMAL)
         self.one_thousand = Monitor.OneThousand(Monitor.State.NORMAL)
-        self.flashers = Monitor.Section(Monitor.State.NORMAL)           #TODO
+        #self.flashers = Monitor.Section(Monitor.State.NORMAL)           #TODO
+
+        # TODO --> THis might not work
+        self.sections = {
+            "inner_1500": self.inner_1500,
+            "outer_1500": self.outer_1500,
+            "side_rows": self.side_rows,
+            "threshold": self.threshold,
+            "five_hundred": self.five_hundred,
+            "one_thousand": self.one_thousand,
+            # "flashers": self.flashers
+        }
 
         self.update()
 
@@ -340,6 +351,7 @@ class Monitor():
 
     def check(self) -> 'Monitor.State':
         """Check the system status."""
+
         self.threshold.check()
         self.inner_1500.check()
         self.outer_1500.check()
@@ -347,4 +359,8 @@ class Monitor():
         self.five_hundred.check()
         self.one_thousand.check()
         
+        return self.status
+    
+    def get_status(self) -> 'Monitor.State':
+        """Get the current system status."""
         return self.status
