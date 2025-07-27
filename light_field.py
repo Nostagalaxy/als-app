@@ -1,5 +1,4 @@
 from rich import print
-from textual.message import Message
 
 from database_interface import DatabaseInterface as DB
 
@@ -25,6 +24,8 @@ class LightField:
                 """Return string representation of object"""
                 return f"[/Light Station : {self.station_id}, Pos : {self.pos}, Color : {self.color}, Static : {self.status}, Type : {self.type}]"
             
+        # TODO You don't need a status of each status it doesnt make sense need to remove
+        
         # Attr : id, station_id, num_lights, status, has_flasher
         def __init__(self, id : int, num_lights : int, status : bool, has_flasher : bool) -> None:
             self.id = id
@@ -162,6 +163,14 @@ class LightField:
                     }
                     lights_out.append(data)
         return lights_out
+    
+    def get_bars_out(self) -> list[int]:
+        """Get a list of bars that are out."""
+        bars_out = []
+        for station in self.stations:
+            if not station.status:
+                bars_out.append(station.id)
+        return bars_out
         
     def set_light_status(self, station_id : int, light_pos : int, status : bool) -> None:
         """Set the status of a light in the database"""

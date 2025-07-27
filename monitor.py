@@ -48,26 +48,24 @@ class Monitor():
             self.bars_out: list = []
             self.lights_out: list = []
         
-        def add_light_out(self, light : tuple) -> None:
+        def add_light_out(self, light: dict) -> None:
             """Add a light outage to the section."""
-            pass
+            if light not in self.lights_out:
+                self.lights_out.append(light)
+                self.lights_out.sort(key=lambda l: l['station_id'])
 
         def add_bar_out(self, station_id: int) -> None:
             """Add a station outage to the section."""
-            if station_id not in self.stations_out:
-                self.stations_out.append(station_id)
+            if station_id not in self.bars_out:
+                self.bars_out.append(station_id)
+                self.bars_out.sort()
 
     class Threshold(Section):
         """Threshold section of the ALS system."""
         def __init__(self, status: 'Monitor.State') -> None:
             super().__init__(status)
 
-        def add_light_out(self, light: tuple) -> None:
-            """Add a light outage to the threshold section."""
-            if light not in self.lights_out:
-                self.lights_out.append(light)
-
-        def check_threshold(self) -> 'Monitor.State':
+        def check(self) -> 'Monitor.State':
             """Check if the threshold is in an outage state."""
             # Random lights out
             rand_lights_out: int = len(self.lights_out)
@@ -75,7 +73,6 @@ class Monitor():
             max_adj_out: int = 0
             count_adj_out: int = 0
             previous_pos: int = 0
-
 
             # Loop through each light out
             for light in self.lights_out:
@@ -102,8 +99,8 @@ class Monitor():
                 #DEBUG
                 print("FAILURE")
                 return Monitor.State.FAILURE
-            elif(rand_lights_out == Monitor.Tolerances.THRESHOLD_RAND_LIGHTS_OUT 
-                or max_adj_out == Monitor.Tolerances.THRESHOLD_ADJ_LIGHTS_OUT):
+            elif(rand_lights_out == Monitor.Tolerances.THRESHOLD_RAND_LIGHTS_OUT - 1 
+                or max_adj_out == Monitor.Tolerances.THRESHOLD_ADJ_LIGHTS_OUT - 1):
                 #DEBUG
                 print("ALERT")
                 return Monitor.State.ALERT
@@ -112,14 +109,83 @@ class Monitor():
                 print("NORMAL")
                 return Monitor.State.NORMAL
                 
+    # Inner 1500 section
+    class Inner1500(Section):
+        """Inner 1500 section of the ALS system."""
+        def __init__(self, status: 'Monitor.State') -> None:
+            super().__init__(status)
+     
+        def check(self) -> 'Monitor.State':
+            """Check if the inner 1500 section is in an outage state."""
+            max_cons_bars_out: int = 0
+            previous_bar: int = 0
+            count_cons_bars_out: int = 0
 
+            # Get total random lights out
+            rand_lights_out: int = len(self.lights_out)
+            
+            # First check if there are any bars out and add to self.bars_out
+            cur_bar: int = 1
+            cur_lights_out: int = 0
+
+            for light in self.lights_out:
+                # If the station id matches the current station
+                cur_id = light['station_id']
+                
+                # Check if the current bar is the same as the current light station id
+                # If not, assign as current bar and reset current lights out
+                if cur_bar != cur_id:
+                    cur_bar = cur_id
+                    cur_lights_out = 0
+                
+                # Increment current lights out
+                cur_lights_out += 1
+
+                if cur_lights_out > Monitor.Tolerances.FIVE_BAR_OUT:
+
+                    # DEBUG 
+                    print(f"Bar out inner 1500 : {cur_id} @ {cur_lights_out}")
+
+                    # Add bar to bars out if not already added
+                    if cur_id not in self.bars_out:
+                        self.bars_out.append(cur_id)
+                        self.bars_out.sort()
+                
+
+            # DEBUG
+            #print(self.bars_out)
+
+            # Check for bars out
+
+            max_cons_bars_out: int = 0
+            previous_bar: int = 0
+            count_cons_bars_out: int = 0
+
+            for bar in self.bars_out:
+                pass
+                
+
+
+
+
+
+
+    # Outer 1500 section
+
+    # Rows section
+
+    # 500' section
+
+    # 1000' section
+
+    #Flashers section
 
     def __init__(self, light_field : LightField, type : str) -> None:
         self.als : LightField = light_field
         
-        self.system_status: Monitor.State = Monitor.State.NORMAL
+        self.status: Monitor.State = Monitor.State.NORMAL
 
-        self.inner_1500 = Monitor.Section(Monitor.State.NORMAL)
+        self.inner_1500 = Monitor.Inner1500(Monitor.State.NORMAL)
         self.outer_1500 = Monitor.Section(Monitor.State.NORMAL)
         self.side_rows = Monitor.Section(Monitor.State.NORMAL)
         self.threshold = Monitor.Threshold(Monitor.State.NORMAL)
@@ -136,10 +202,31 @@ class Monitor():
         lights_out = self.als.get_lights_out()
         # Loop through each light out
         for light in lights_out:
-            # Check threshold lights
+            # Add light to the appropriate section
+            # Threshold section
             if light["station_id"] == 0:
                 self.threshold.add_light_out(light)
+            # 500' section
+            elif light["station_id"] == 5:
+                self.five_hundred.add_light_out(light)
+            # 1000' section
+            elif light["station_id"] == 10:
+                self.one_thousand.add_light_out(light)
+            # Outer 1500 section
+            elif light["station_id"] > 15:
+                self.outer_1500.add_light_out(light)
+            # Row bar sections
+            elif (light["pos"] > 0 and light["pos"]) < 4 or (light["pos"] > 8 and light["pos"] < 12):
+                self.side_rows.add_light_out(light)
+            # Inner 1500 section
+            elif light["pos"] > 3 and light["pos"] < 9:
+                self.inner_1500.add_light_out(light)
+            
+        self.status = self.check()
 
-        self.threshold.check_threshold()
-
-    
+    def check(self) -> 'Monitor.State':
+        """Check the system status."""
+        self.threshold.check()
+        self.inner_1500.check()
+        
+        return self.status
