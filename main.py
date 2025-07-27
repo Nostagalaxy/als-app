@@ -26,6 +26,7 @@ class MyApp(App):
         self.monitor = Monitor(self.als, "ALSF")
 
 
+
     def on_button_pressed(self, event : Button.Pressed):
         if event.button.id == "light_select":
             # Check inputs have data and data is correct
@@ -35,10 +36,17 @@ class MyApp(App):
             else:
                 self.log("Invalid input light selection")
 
+        if event.button.id == "quit":
+            self.monitor.update()
+            sidebar = self.query_one(SideMenu)
+            if hasattr(sidebar, "status"):
+                sidebar.status = self.monitor.get_status().name
+            else:
+                self.log("SideMenu does not have a 'status' attribute")
+            
+
     def on_light_menu_status_changed(self, message : LightMenu.StatusChanged):
         self.als.set_light_status(message.station_id, message.light_pos, message.updated_status)
-
-    # TODO -> Move this function under the ALS class
 
     def get_light_from_input(self) -> dict:
         station = int(self.query_one("#station_input", Input).value)
@@ -68,6 +76,8 @@ class MyApp(App):
         
         # Returns True if all other statements are passed
         return True
+
+    
 
 if __name__ == "__main__":
     app = MyApp()

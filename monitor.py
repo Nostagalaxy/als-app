@@ -299,6 +299,9 @@ class Monitor():
         
         self.status: Monitor.State = Monitor.State.NORMAL
 
+        self.num_alerts: int = 0
+        self.num_failures: int = 0
+
         self.inner_1500 = Monitor.Inner1500(Monitor.State.NORMAL)
         self.outer_1500 = Monitor.Outer1500(Monitor.State.NORMAL)
         self.side_rows = Monitor.SideRows(Monitor.State.NORMAL)
@@ -309,22 +312,22 @@ class Monitor():
 
         # TODO --> THis might not work
         self.sections = {
-            "inner_1500": self.inner_1500,
-            "outer_1500": self.outer_1500,
-            "side_rows": self.side_rows,
-            "threshold": self.threshold,
-            "five_hundred": self.five_hundred,
-            "one_thousand": self.one_thousand,
-            # "flashers": self.flashers
+            self.inner_1500,
+            self.outer_1500,
+            self.side_rows,
+            self.threshold,
+            self.five_hundred,
+            self.one_thousand
+            #self.flashers
         }
 
         self.update()
 
     def update(self) -> None:
         # Data is (station_id, pos)
-        # Get a fresh lists of lights out everytime you need to update
-
+        # Get a fresh list of lights out everytime you need to update
         lights_out = self.als.get_lights_out()
+        
         # Loop through each light out
         for light in lights_out:
             # Add light to the appropriate section
@@ -352,15 +355,35 @@ class Monitor():
     def check(self) -> 'Monitor.State':
         """Check the system status."""
 
-        self.threshold.check()
-        self.inner_1500.check()
-        self.outer_1500.check()
-        self.side_rows.check()
-        self.five_hundred.check()
-        self.one_thousand.check()
+        for section in self.sections:
+            # Check if the section is in an outage state
+            section.status = section.check()
+            
+            temp_status = Monitor.State.NORMAL
+
+            if section.status == Monitor.State.FAILURE:
+                # If any section is in a failure state, the system is in a failure state
+                temp_status = Monitor.State.FAILURE
+                self.num_failures += 1
+            elif section.status == Monitor.State.ALERT and temp_status != Monitor.State.FAILURE:
+                # If any section is in an alert state, the system is in an alert state
+                temp_status = Monitor.State.ALERT
+                self.num_alerts += 1
         
-        return self.status
+        return temp_status
     
     def get_status(self) -> 'Monitor.State':
         """Get the current system status."""
+        
+        #DEBUG
+        print(f"Number of alerts : {self.num_alerts},\nNumber of failures : {self.num_failures}")
+
         return self.status
+    
+    def get_num_alerts(self) -> int:
+        """Get the number of alerts."""
+        return self.num_alerts
+    
+    def get_num_failures(self) -> int:
+        """Get the number of failures."""
+        return self.num_failures
